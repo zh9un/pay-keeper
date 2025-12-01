@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.springboot.paykeeper.mapper.SubscriptionMapper">
+
+    <!-- ===========================
+         ResultMap Definitions
+         =========================== -->
+
+    <!-- PartyMember ResultMap -->
+    <resultMap id="PartyMemberResultMap" type="PartyMemberDO">
+        <id property="memberSeq" column="member_seq"/>
+        <result property="subSeq" column="sub_seq"/>
+        <result property="memberName" column="member_name"/>
+        <result property="perPrice" column="per_price"/>
+        <result property="isPaid" column="is_paid"/>
+    </resultMap>
+
+    <!-- Subscription ResultMap with 1:N Collection (파티원 포함) -->
+    <resultMap id="SubscriptionWithMembersResultMap" type="SubscriptionDO">
+        <id property="seq" column="seq"/>
+        <result property="serviceName" column="service_name"/>
+        <result property="totalPrice" column="total_price"/>
+        <result property="billingDate" column="billing_date"/>
+        <result property="regdate" column="regdate"/>
+
+        <!-- 1:N Collection Mapping -->
+        <collection property="members"
+                    ofType="PartyMemberDO"
+                    resultMap="PartyMemberResultMap"/>
+    </resultMap>
+
+    <!-- ===========================
+         CREATE Operations
+         =========================== -->
+
+    <!-- 구독 등록 (useGeneratedKeys로 seq 자동 반환) -->
+    <insert id="insertSubscription" parameterType="SubscriptionDO"
+            useGeneratedKeys="true" keyProperty="seq" keyColumn="seq">
+        INSERT INTO subscription (service_name, total_price, billing_date)
+        VALUES (#{serviceName}, #{totalPrice}, #{billingDate})
+    </insert>
+
+    <!-- 파티원 일괄 등록 (foreach 배치 삽입) -->
+    <insert id="insertPartyMembers" parameterType="list">
+        INSERT INTO party_member (sub_seq, member_name, per_price, is_paid)
+        VALUES
+        <foreach collection="list" item="member" separator=",">
+            (#{member.subSeq}, #{member.memberName}, #{member.perPrice}, #{member.isPaid})
+        </foreach>
+    </insert>
+
+    <!-- ===========================
+         READ Operations
+         =========================== -->
+
+    <!-- 전체 구독 목록 조회 (파티원 포함) -->
+    <select id="selectAll" resultMap="SubscriptionWithMembersResultMap">
+        SELECT
+            s.seq,
+            s.service_name,
+            s.total_price,
+            s.billing_date,
+            s.regdate,
+            pm.member_seq,
+            pm.sub_seq,
+            pm.member_name,
+            pm.per_price,
+            pm.is_paid
+        FROM subscription s
+        LEFT JOIN party_member pm ON s.seq = pm.sub_seq
+        ORDER BY s.seq DESC, pm.member_seq ASC
+    </select>
+
+    <!-- 특정 구독 조회 (파티원 포함) -->
+    <select id="selectOne" parameterType="int" resultMap="SubscriptionWithMembersResultMap">
+        SELECT
+            s.seq,
+            s.service_name,
+            s.total_price,
+            s.billing_date,
+            s.regdate,
+            pm.member_seq,
+            pm.sub_seq,
+            pm.member_name,
+            pm.per_price,
+            pm.is_paid
+        FROM subscription s
+        LEFT JOIN party_member pm ON s.seq = pm.sub_seq
+        WHERE s.seq = #{seq}
+        ORDER BY pm.member_seq ASC
+    </select>
+
+    <!-- 동적 SQL 검색 (MyBatis <if> 태그 사용) -->
+    <select id="searchSubscriptions" resultMap="SubscriptionWithMembersResultMap">
+        SELECT DISTINCT
+            s.seq,
+            s.service_name,
+            s.total_price,
+            s.billing_date,
+            s.regdate,
+            pm.member_seq,
+            pm.sub_seq,
+            pm.member_name,
+            pm.per_price,
+            pm.is_paid
+        FROM subscription s
+        LEFT JOIN party_member pm ON s.seq = pm.sub_seq
+        <where>
+            <!-- 동적 SQL: 서비스명 검색 -->
+            <if test="searchType == 'service' and keyword != null and keyword != ''">
+                s.service_name LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+
+            <!-- 동적 SQL: 파티원 이름 검색 -->
+            <if test="searchType == 'member' and keyword != null and keyword != ''">
+                pm.member_name LIKE CONCAT('%', #{keyword}, '%')
+            </if>
+        </where>
+        ORDER BY s.seq DESC, pm.member_seq ASC
+    </select>
+
+    <!-- ===========================
+         UPDATE Operations
+         =========================== -->
+
+    <!-- 입금 상태 토글 -->
+    <update id="updatePaidStatus">
+        UPDATE party_member
+        SET is_paid = #{newStatus}
+        WHERE member_seq = #{memberSeq}
+    </update>
+
+    <!-- 파티원 정보 수정 -->
+    <update id="updatePartyMember" parameterType="PartyMemberDO">
+        UPDATE party_member
+        SET member_name = #{memberName},
+            per_price = #{perPrice},
+            is_paid = #{isPaid}
+        WHERE member_seq = #{memberSeq}
+    </update>
+
+    <!-- 구독 정보 수정 -->
+    <update id="updateSubscription" parameterType="SubscriptionDO">
+        UPDATE subscription
+        SET service_name = #{serviceName},
+            total_price = #{totalPrice},
+            billing_date = #{billingDate}
+        WHERE seq = #{seq}
+    </update>
+
+    <!-- ===========================
+         DELETE Operations
+         =========================== -->
+
+    <!-- 구독 삭제 (CASCADE로 파티원도 자동 삭제) -->
+    <delete id="deleteSubscription" parameterType="int">
+        DELETE FROM subscription
+        WHERE seq = #{seq}
+    </delete>
+
+    <!-- 파티원 삭제 -->
+    <delete id="deletePartyMember" parameterType="int">
+        DELETE FROM party_member
+        WHERE member_seq = #{memberSeq}
+    </delete>
+
+    <!-- ===========================
+         UTILITY Operations
+         =========================== -->
+
+    <!-- 전체 구독 수 조회 -->
+    <select id="countSubscriptions" resultType="int">
+        SELECT COUNT(*) FROM subscription
+    </select>
+
+    <!-- 특정 구독의 파티원 수 조회 -->
+    <select id="countPartyMembers" parameterType="int" resultType="int">
+        SELECT COUNT(*) FROM party_member
+        WHERE sub_seq = #{subSeq}
+    </select>
+
+</mapper>
