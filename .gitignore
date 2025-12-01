@@ -38,6 +38,12 @@ nbdist/
 *.log
 logs/
 
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
 # Package Files
 *.jar
 *.war
@@ -49,6 +55,7 @@ logs/
 
 # Virtual machine crash logs
 hs_err_pid*
+replay_pid*
 
 # OS files
 .DS_Store
