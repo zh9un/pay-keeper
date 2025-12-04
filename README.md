@@ -31,7 +31,9 @@ Pay Keeper는 Netflix, YouTube Premium 등의 OTT 서비스를 여러 명이 공
 - **Template Engine**: JSP (Jakarta EE)
 - **Tag Library**: JSTL 3.0.0
 - **UI Framework**: Bootstrap 5.3.0
+- **Calendar Library**: FullCalendar 6.1.8
 - **AJAX**: Fetch API
+- **Clipboard API**: 공유 링크 복사
 
 ### Architecture
 - **Design Pattern**: MVC (Model-View-Controller)
@@ -108,6 +110,27 @@ Pay Keeper는 Netflix, YouTube Premium 등의 OTT 서비스를 여러 명이 공
 - 반응형 디자인 (모바일 대응)
 - 입금 현황 배지 표시
 - 구독별 파티원 목록 테이블
+- 통계 대시보드 (구독 수, 총 결제액, 파티원 수, 입금률)
+
+### 6. 구독 캘린더 뷰
+- FullCalendar 라이브러리 활용
+- 구독 서비스의 결제일을 달력에 시각화
+- 월별 결제 일정 한눈에 확인
+- 31일이 없는 달 자동 처리 (예: 2월 28/29일)
+- 서버 사이드 렌더링 (JSTL → JavaScript 데이터 변환)
+
+### 7. 게스트 공유 링크
+- UUID 기반 고유 공유 링크 자동 생성
+- 로그인 없이 구독 현황 조회 가능
+- 읽기 전용 뷰 (수정/삭제 불가)
+- Clipboard API를 통한 링크 복사
+- 총무는 관리, 파티원은 간편 조회 컨셉
+
+### 8. 계좌번호 관리 및 독촉 기능
+- 구독별 입금 계좌번호 등록
+- 계좌번호 원클릭 복사
+- 미입금 파티원 독촉 메시지 자동 생성
+- 메시지에 이름, 금액, 계좌번호 포함
 
 ---
 
@@ -123,6 +146,8 @@ Pay Keeper는 Netflix, YouTube Premium 등의 OTT 서비스를 여러 명이 공
 │ service_name (VARCHAR 100)   │
 │ total_price (INT)            │
 │ billing_date (INT)           │
+│ account_number (VARCHAR 100) │
+│ share_uuid (VARCHAR 36)      │
 │ regdate (TIMESTAMP)          │
 └──────────┬──────────────────┘
            │ 1:N
@@ -147,6 +172,8 @@ Pay Keeper는 Netflix, YouTube Premium 등의 OTT 서비스를 여러 명이 공
 | service_name | VARCHAR(100) | NOT NULL | 서비스명 |
 | total_price | INT | NOT NULL, CHECK > 0 | 총 결제 금액 |
 | billing_date | INT | NOT NULL, CHECK 1-31 | 매월 결제일 |
+| account_number | VARCHAR(100) | NULL | 입금 계좌번호 |
+| share_uuid | VARCHAR(36) | UNIQUE | 공유 링크용 UUID |
 | regdate | TIMESTAMP | DEFAULT NOW() | 등록 일시 |
 
 #### party_member (파티원 정보)
@@ -190,11 +217,15 @@ paykeeper/
 ├── src/main/resources/
 │   ├── application.properties             # Spring Boot 설정
 │   ├── schema.sql                         # 데이터베이스 스키마
+│   ├── migration.sql                      # DB 마이그레이션 1 (계좌번호)
+│   ├── migration2.sql                     # DB 마이그레이션 2 (공유 링크)
 │   └── mapper/
 │       └── SubscriptionMapper.xml         # MyBatis SQL 매핑
 ├── src/main/webapp/views/
-│   ├── list.jsp                           # 목록/검색 화면
-│   └── write.jsp                          # 등록 폼 화면
+│   ├── list.jsp                           # 목록/검색/캘린더 화면
+│   ├── write.jsp                          # 등록 폼 화면
+│   ├── edit.jsp                           # 수정 폼 화면
+│   └── guest_view.jsp                     # 게스트 공유 뷰 (읽기 전용)
 ├── pom.xml                                # Maven 빌드 설정
 └── README.md
 ```
@@ -383,10 +414,13 @@ http://localhost:8080
 | GET | `/list` | 전체 구독 목록 조회 | list.jsp |
 | GET | `/list?searchType={type}&keyword={word}` | 동적 검색 | list.jsp |
 | GET | `/write` | 등록 폼 화면 | write.jsp |
+| GET | `/edit?seq={id}` | 수정 폼 화면 | edit.jsp |
 | POST | `/create` | 구독 등록 처리 | redirect:/list |
+| POST | `/update` | 구독 수정 처리 | redirect:/list |
 | POST | `/togglePaid` | 입금 상태 토글 (AJAX) | JSON |
-| POST | `/delete?seq={id}` | 구독 삭제 | redirect:/list |
+| POST | `/delete` | 구독 삭제 | redirect:/list |
 | GET | `/detail?seq={id}` | 구독 상세 조회 | detail.jsp |
+| GET | `/share/{uuid}` | 게스트 공유 링크 (읽기 전용) | guest_view.jsp |
 
 ### 검색 파라미터
 - `searchType`: "service" (서비스명) 또는 "member" (파티원 이름)

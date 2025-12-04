@@ -65,10 +65,8 @@
                                 <li><span class="text-danger">미입금</span> ↔ <span class="text-primary">완료</span> 상태 전환</li>
                                 <li>실시간으로 상태가 변경됩니다</li>
                             </ul>
-                        </div>
 
-                        <div class="col-md-6">
-                            <h6 class="border-bottom pb-2"><i class="bi bi-3-circle-fill text-warning"></i> 구독 수정하기</h6>
+                            <h6 class="border-bottom pb-2 mt-3"><i class="bi bi-3-circle-fill text-warning"></i> 구독 수정하기</h6>
                             <ul class="small">
                                 <li>구독 카드 우측 상단 <span class="badge bg-warning">수정</span> 버튼 클릭</li>
                                 <li>서비스명, 금액, 파티원 정보 수정 가능</li>
@@ -81,19 +79,36 @@
                                 <li>확인 창에서 "확인" 선택</li>
                                 <li>파티원 정보도 함께 삭제됩니다</li>
                             </ul>
+                        </div>
 
-                            <h6 class="border-bottom pb-2 mt-3"><i class="bi bi-5-circle-fill text-secondary"></i> 검색 기능</h6>
+                        <div class="col-md-6">
+                            <h6 class="border-bottom pb-2"><i class="bi bi-5-circle-fill text-secondary"></i> 검색 기능</h6>
                             <ul class="small">
                                 <li><strong>서비스명</strong> 또는 <strong>파티원 이름</strong>으로 검색 가능</li>
                                 <li>검색 조건 선택 후 키워드 입력</li>
                                 <li><span class="badge bg-success">검색</span> 버튼 클릭</li>
+                            </ul>
+
+                            <h6 class="border-bottom pb-2 mt-3"><i class="bi bi-6-circle-fill text-info"></i> 캘린더 뷰</h6>
+                            <ul class="small">
+                                <li>통계 대시보드 아래 <strong>구독 결제 달력</strong>에서 결제 일정 확인</li>
+                                <li>각 구독의 결제일이 달력에 표시됩니다</li>
+                                <li>월별 결제 스케줄을 한눈에 파악 가능</li>
+                            </ul>
+
+                            <h6 class="border-bottom pb-2 mt-3"><i class="bi bi-7-circle-fill text-success"></i> 공유 링크</h6>
+                            <ul class="small">
+                                <li>구독 카드의 <span class="badge bg-info">링크 복사</span> 버튼 클릭</li>
+                                <li>복사된 링크를 파티원에게 전달</li>
+                                <li>파티원은 로그인 없이 입금 현황 확인 가능</li>
+                                <li><strong>주의:</strong> 공유 링크는 읽기 전용입니다</li>
                             </ul>
                         </div>
                     </div>
 
                     <div class="alert alert-light border mt-3 mb-0">
                         <i class="bi bi-lightbulb-fill text-warning"></i>
-                        <strong>Tip:</strong> 상단 통계 대시보드에서 전체 구독 현황을 한눈에 확인할 수 있습니다.
+                        <strong>Tip:</strong> 상단 통계 대시보드에서 전체 구독 현황을 한눈에 확인하고, 캘린더로 결제 일정을 관리하세요!
                     </div>
                 </div>
             </div>
