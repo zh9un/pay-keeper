@@ -18,6 +18,7 @@
     </resultMap>
 
     <!-- Subscription ResultMap with 1:N Collection (파티원 포함) -->
+    <!-- NESTED SELECT 방식으로 변경하여 N+1 문제 발생 가능성 있으나, 데이터 정합성을 위해 수정 -->
     <resultMap id="SubscriptionWithMembersResultMap" type="SubscriptionDO">
         <id property="seq" column="seq"/>
         <result property="serviceName" column="service_name"/>
@@ -27,10 +28,11 @@
         <result property="shareUuid" column="share_uuid"/>
         <result property="regdate" column="regdate"/>
 
-        <!-- 1:N Collection Mapping -->
+        <!-- 1:N Collection Mapping using a nested select -->
         <collection property="members"
+                    column="seq"
                     ofType="PartyMemberDO"
-                    resultMap="PartyMemberResultMap"/>
+                    select="selectPartyMembersForSubscription"/>
     </resultMap>
 
     <!-- ===========================
@@ -57,97 +59,46 @@
          READ Operations
          =========================== -->
 
-    <!-- 전체 구독 목록 조회 (파티원 포함) -->
-    <select id="selectAll" resultMap="SubscriptionWithMembersResultMap">
-        SELECT
-            s.seq,
-            s.service_name,
-            s.total_price,
-            s.billing_date,
-            s.account_number,
-            s.share_uuid,
-            s.regdate,
-            pm.member_seq,
-            pm.sub_seq,
-            pm.member_name,
-            pm.per_price,
-            pm.is_paid
-        FROM subscription s
-        LEFT JOIN party_member pm ON s.seq = pm.sub_seq
-        ORDER BY s.seq DESC, pm.member_seq ASC
+    <!-- Nested Select용 파티원 조회 쿼리 -->
+    <select id="selectPartyMembersForSubscription" parameterType="int" resultMap="PartyMemberResultMap">
+        SELECT member_seq, sub_seq, member_name, per_price, is_paid
+        FROM party_member
+        WHERE sub_seq = #{subSeq}
+        ORDER BY member_seq ASC
     </select>
 
-    <!-- 특정 구독 조회 (파티원 포함) -->
+    <!-- 전체 구독 목록 조회 -->
+    <select id="selectAll" resultMap="SubscriptionWithMembersResultMap">
+        SELECT * FROM subscription ORDER BY seq DESC
+    </select>
+
+    <!-- 특정 구독 조회 -->
     <select id="selectOne" parameterType="int" resultMap="SubscriptionWithMembersResultMap">
-        SELECT
-            s.seq,
-            s.service_name,
-            s.total_price,
-            s.billing_date,
-            s.account_number,
-            s.share_uuid,
-            s.regdate,
-            pm.member_seq,
-            pm.sub_seq,
-            pm.member_name,
-            pm.per_price,
-            pm.is_paid
-        FROM subscription s
-        LEFT JOIN party_member pm ON s.seq = pm.sub_seq
-        WHERE s.seq = #{seq}
-        ORDER BY pm.member_seq ASC
+        SELECT * FROM subscription WHERE seq = #{seq}
     </select>
 
     <!-- 동적 SQL 검색 (MyBatis <if> 태그 사용) -->
     <select id="searchSubscriptions" resultMap="SubscriptionWithMembersResultMap">
-        SELECT DISTINCT
-            s.seq,
-            s.service_name,
-            s.total_price,
-            s.billing_date,
-            s.account_number,
-            s.share_uuid,
-            s.regdate,
-            pm.member_seq,
-            pm.sub_seq,
-            pm.member_name,
-            pm.per_price,
-            pm.is_paid
+        SELECT s.*
         FROM subscription s
-        LEFT JOIN party_member pm ON s.seq = pm.sub_seq
         <where>
-            <!-- 동적 SQL: 서비스명 검색 -->
             <if test="searchType == 'service' and keyword != null and keyword != ''">
                 s.service_name LIKE CONCAT('%', #{keyword}, '%')
             </if>
-
-            <!-- 동적 SQL: 파티원 이름 검색 -->
             <if test="searchType == 'member' and keyword != null and keyword != ''">
-                pm.member_name LIKE CONCAT('%', #{keyword}, '%')
+                s.seq IN (
+                    SELECT DISTINCT pm.sub_seq
+                    FROM party_member pm
+                    WHERE pm.member_name LIKE CONCAT('%', #{keyword}, '%')
+                )
             </if>
         </where>
-        ORDER BY s.seq DESC, pm.member_seq ASC
+        ORDER BY s.seq DESC
     </select>
 
     <!-- UUID로 구독 조회 (게스트 공유 링크용) -->
     <select id="selectByUuid" parameterType="string" resultMap="SubscriptionWithMembersResultMap">
-        SELECT
-            s.seq,
-            s.service_name,
-            s.total_price,
-            s.billing_date,
-            s.account_number,
-            s.share_uuid,
-            s.regdate,
-            pm.member_seq,
-            pm.sub_seq,
-            pm.member_name,
-            pm.per_price,
-            pm.is_paid
-        FROM subscription s
-        LEFT JOIN party_member pm ON s.seq = pm.sub_seq
-        WHERE s.share_uuid = #{uuid}
-        ORDER BY pm.member_seq ASC
+        SELECT * FROM subscription WHERE share_uuid = #{uuid}
     </select>
 
     <!-- ===========================
