@@ -26,6 +26,13 @@
 </head>
 <body>
     <div class="container mt-5">
+        <!-- Global Brand Header -->
+        <div class="mb-4">
+            <a href="/list" class="text-decoration-none d-inline-flex align-items-center" style="color: var(--text-color-primary);">
+                <span class="fw-bold fs-4">페이키퍼 <span class="text-secondary fs-6 ms-1 fw-normal">Pay Keeper</span></span>
+            </a>
+        </div>
+
         <!-- Header -->
         <div class="row mb-4">
             <div class="col-md-12">
@@ -66,15 +73,34 @@
 
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="serviceName" class="form-label">
+                            <label class="form-label">
                                 서비스명 <span class="text-danger">*</span>
                             </label>
+                            <div class="d-flex gap-2 mb-2">
+                                <!-- 1. 카테고리 선택 -->
+                                <select class="form-select" id="categorySelect" onchange="handleCategoryChange(this)" style="flex: 1;">
+                                    <option value="" disabled>카테고리</option>
+                                    <option value="video">영상 (OTT)</option>
+                                    <option value="music">음악</option>
+                                    <option value="shopping">쇼핑/생활</option>
+                                    <option value="ai">AI & 생산성</option>
+                                    <option value="custom">직접 입력</option>
+                                </select>
+                                
+                                <!-- 2. 서비스 선택 -->
+                                <select class="form-select" id="serviceSelect" onchange="handleServiceChange(this)" style="flex: 1.5;" disabled>
+                                    <option value="" disabled selected>서비스 선택</option>
+                                </select>
+                            </div>
+                            
+                            <!-- 실제 값 전송용 및 직접 입력 필드 -->
                             <input type="text" class="form-control" id="serviceName"
-                                   name="serviceName" placeholder="예: 넷플릭스 프리미엄"
+                                   name="serviceName" placeholder="서비스명 입력"
                                    value="${subscription.serviceName}"
-                                   required maxlength="100">
+                                   style="display:none;" maxlength="100">
+                                   
                             <div class="form-text">
-                                구독 중인 OTT 서비스 이름을 입력하세요
+                                카테고리를 먼저 선택하거나 직접 입력하세요.
                             </div>
                         </div>
 
@@ -178,8 +204,129 @@
 
     <!-- Form Validation & Preview -->
     <script>
-        // 페이지 로드 시 초기 계산 미리보기 표시
-        window.addEventListener('DOMContentLoaded', updatePreview);
+        // 서비스 데이터 정의 (Global)
+        window.serviceData = {
+            video: [
+                { name: '넷플릭스', value: 'Netflix' },
+                { name: '유튜브 프리미엄', value: 'Youtube Premium' },
+                { name: '티빙', value: 'Tving' },
+                { name: '웨이브', value: 'Wavve' },
+                { name: '디즈니+', value: 'Disney+' },
+                { name: '쿠팡플레이', value: 'Coupang Play' },
+                { name: '왓챠', value: 'Watcha' },
+                { name: '라프텔', value: 'Laftel' },
+                { name: '아마존 프라임 비디오', value: 'Amazon Prime Video' }
+            ],
+            music: [
+                { name: '멜론', value: 'Melon' },
+                { name: '스포티파이', value: 'Spotify' },
+                { name: '유튜브 뮤직', value: 'Youtube Music' },
+                { name: '애플뮤직', value: 'Apple Music' },
+                { name: '지니', value: 'Genie' },
+                { name: '벅스', value: 'Bugs' },
+                { name: '플로', value: 'Flo' }
+            ],
+            shopping: [
+                { name: '쿠팡 와우 멤버십', value: 'Coupang Wow' },
+                { name: '네이버 플러스 멤버십', value: 'Naver Plus' },
+                { name: '신세계 유니버스', value: 'Shinsegae Universe' },
+                { name: '컬리패스', value: 'Kurly Pass' },
+                { name: '배민클럽', value: 'Baemin' },
+                { name: '요기패스', value: 'Yogiyo' }
+            ],
+            ai: [
+                { name: 'ChatGPT Plus', value: 'ChatGPT Plus' },
+                { name: 'Claude Pro', value: 'Claude Pro' },
+                { name: 'Gemini Advanced', value: 'Gemini Advanced' },
+                { name: 'Midjourney', value: 'Midjourney' },
+                { name: 'DeepL Pro', value: 'DeepL Pro' },
+                { name: 'Perplexity Pro', value: 'Perplexity Pro' },
+                { name: 'Notion Plus', value: 'Notion Plus' },
+                { name: 'Microsoft 365', value: 'Microsoft 365' },
+                { name: 'Adobe Creative Cloud', value: 'Adobe Creative Cloud' }
+            ]
+        };
+
+        // 1. 카테고리 선택 핸들러
+        function handleCategoryChange(catSelect) {
+            const svcSelect = document.getElementById('serviceSelect');
+            const input = document.getElementById('serviceName');
+            const category = catSelect.value;
+
+            // 서비스 셀렉트 초기화
+            svcSelect.innerHTML = '<option value="" disabled selected>서비스 선택</option>';
+            
+            if (category === 'custom') {
+                svcSelect.style.display = 'none';
+                svcSelect.disabled = true;
+                input.style.display = 'block';
+                input.disabled = false;
+                if(input.value === '') input.focus(); // 값이 없을 때만 포커스
+            } else {
+                input.style.display = 'none';
+                svcSelect.style.display = 'block';
+                svcSelect.disabled = false;
+                
+                const data = window.serviceData[category];
+                if (data) {
+                    data.forEach(svc => {
+                        const option = document.createElement('option');
+                        option.value = svc.value;
+                        option.textContent = svc.name;
+                        svcSelect.appendChild(option);
+                    });
+                }
+                // 카테고리 변경 시 input 값 초기화 (단, 초기 로딩 시에는 유지해야 함 -> 별도 처리)
+                if (event && event.type === 'change') {
+                    input.value = '';
+                }
+            }
+        }
+
+        // 2. 서비스 선택 핸들러
+        function handleServiceChange(svcSelect) {
+            const input = document.getElementById('serviceName');
+            input.value = svcSelect.value;
+        }
+
+        // 3. 초기 선택 상태 복원 (수정 페이지용)
+        function initServiceSelection() {
+            const input = document.getElementById('serviceName');
+            const currentService = input.value;
+            const catSelect = document.getElementById('categorySelect');
+            const svcSelect = document.getElementById('serviceSelect');
+            
+            let foundCategory = null;
+
+            // 서비스 목록에서 현재 서비스명 검색
+            for (const [category, services] of Object.entries(window.serviceData)) {
+                const found = services.find(s => s.value === currentService || s.name === currentService);
+                if (found) {
+                    foundCategory = category;
+                    break;
+                }
+            }
+
+            if (foundCategory) {
+                // 목록에 있으면 해당 카테고리 및 서비스 선택
+                catSelect.value = foundCategory;
+                handleCategoryChange(catSelect); // 옵션 생성
+                svcSelect.value = currentService; // 서비스 선택
+                
+                // handleCategoryChange가 input을 지웠을 수 있으므로 다시 복구
+                input.value = currentService;
+            } else {
+                // 목록에 없으면 '직접 입력' 모드
+                catSelect.value = 'custom';
+                handleCategoryChange(catSelect);
+            }
+        }
+
+        // 페이지 로드 시 초기화
+        window.addEventListener('DOMContentLoaded', () => {
+            updatePreview();
+            initServiceSelection();
+        });
 
         // 실시간 계산 미리보기
         document.getElementById('totalPrice').addEventListener('input', updatePreview);
@@ -206,15 +353,29 @@
 
         // 폼 제출 전 유효성 검증
         function validateForm() {
-            const serviceName = document.getElementById('serviceName').value.trim();
+            const catSelect = document.getElementById('categorySelect');
+            const svcSelect = document.getElementById('serviceSelect');
+            const input = document.getElementById('serviceName');
+            let serviceName = input.value.trim();
+            
+            if (!catSelect.value) {
+                Toast.error('카테고리를 선택해주세요.');
+                return false;
+            }
+
+            if (catSelect.value !== 'custom' && !svcSelect.value) {
+                Toast.error('서비스를 선택해주세요.');
+                return false;
+            }
+            
+            if (!serviceName) {
+                 Toast.error('서비스명을 입력해주세요.');
+                 return false;
+            }
+
             const totalPrice = parseInt(document.getElementById('totalPrice').value);
             const billingDate = parseInt(document.getElementById('billingDate').value);
             const memberNames = document.getElementById('memberNames').value.trim();
-
-            if (!serviceName) {
-                Toast.error('서비스명을 입력해주세요.');
-                return false;
-            }
 
             if (!totalPrice || totalPrice <= 0) {
                 Toast.error('유효한 총 금액을 입력해주세요.');
@@ -237,9 +398,10 @@
                 return false;
             }
 
-            // 제출 버튼에 로딩 상태 표시
             const submitBtn = event.target.querySelector('button[type="submit"]');
-            setButtonLoading(submitBtn, true);
+            if (typeof setButtonLoading === 'function') {
+                setButtonLoading(submitBtn, true);
+            }
 
             return true;
         }

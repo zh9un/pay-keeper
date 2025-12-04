@@ -39,8 +39,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         List<String> nameList = parseMemberNames(memberNames);
 
         // 3. 1/N 정산 계산 (핵심 비즈니스 로직)
-        // totalPrice를 (파티원 수 + 본인 1명)으로 나눔
-        int totalMemberCount = nameList.size() + 1; // 파티원 + 본인
+        // totalPrice를 파티원 수로 나눔
+        int totalMemberCount = nameList.size();
         int perPrice = calculatePerPrice(subscription.getTotalPrice(), totalMemberCount);
 
         System.out.println("[Service] 1/N 계산: " + subscription.getTotalPrice() +
@@ -130,7 +130,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         // 4. 새 파티원 목록 생성 및 1/N 계산
         List<String> nameList = parseMemberNames(memberNames);
-        int totalMemberCount = nameList.size() + 1; // 본인 포함
+        int totalMemberCount = nameList.size();
         int perPrice = calculatePerPrice(subscription.getTotalPrice(), totalMemberCount);
 
         System.out.println("[Service] 수정 - 1/N 계산: " + subscription.getTotalPrice() +

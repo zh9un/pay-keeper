@@ -22,8 +22,11 @@
     <div class="container my-5 animate-fade-in-up">
         <!-- Header -->
         <header class="d-flex justify-content-between align-items-center mb-5">
-            <div>
-                <h1 class="h2 mb-0"><i class="bi bi-cash-coin me-2"></i>Pay Keeper</h1>
+            <div style="cursor: pointer;" onclick="location.href='/list'" title="메인으로 이동">
+                <h1 class="h2 mb-0">
+                    페이키퍼
+                    <span class="text-secondary fs-5 ms-1 fw-normal">Pay Keeper</span>
+                </h1>
                 <p class="text-secondary mb-0">OTT 구독 공유 및 정산 관리 시스템</p>
             </div>
             <a href="/write" class="btn btn-primary">
@@ -60,82 +63,99 @@
             </div>
         </div>
 
-        <!-- Dashboard Statistics -->
-        <div class="row mb-4 g-4">
-            <div class="col-md-3">
-                <div class="card stat-card">
-                    <div class="card-body">
-                        <div class="stat-icon"><i class="bi bi-tv-fill"></i></div>
-                        <div class="stat-title">총 구독 수</div>
-                        <div class="stat-value">${stats.countSubscriptions}</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card stat-card">
-                    <div class="card-body">
-                        <div class="stat-icon"><i class="bi bi-currency-dollar"></i></div>
-                        <div class="stat-title">총 월 결제액</div>
-                        <div class="stat-value">${stats.sumTotalPrice}</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card stat-card">
-                    <div class="card-body">
-                        <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
-                        <div class="stat-title">전체 파티원</div>
-                        <div class="stat-value">${stats.countAllPartyMembers}</div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card stat-card">
-                    <div class="card-body">
-                        <div class="stat-icon"><i class="bi bi-check-circle-fill"></i></div>
-                        <div class="stat-title">입금 완료율</div>
-                        <div class="stat-value">${String.format("%.0f", stats.paidPercentage)}%</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Calendar View (결제일 달력) -->
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-calendar3 me-2"></i>구독 결제 달력</h5>
-            </div>
-            <div class="card-body">
-                <div id="calendar"></div>
-            </div>
-        </div>
-
-        <!-- Search Form -->
-        <div class="card mb-4">
-            <div class="card-body">
-                <form action="/list" method="get" class="row g-3 align-items-end">
-                    <div class="col-md-4">
-                        <label class="form-label">검색 조건</label>
-                        <div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="searchType" value="service" id="searchService" ${searchType != 'member' ? 'checked' : ''}>
-                                <label class="form-check-label" for="searchService">서비스명</label>
+        <!-- Dashboard & Calendar Section -->
+        <div class="row mb-5 align-items-stretch">
+            <!-- Left: Stats & Search -->
+            <div class="col-lg-5 mb-4 mb-lg-0 d-flex flex-column">
+                <!-- Stats Grid -->
+                <div class="mb-auto"> <!-- mb-auto pushes the search card down -->
+                    <h5 class="mb-3 fw-bold"><i class="bi bi-bar-chart-fill me-2"></i>구독 현황</h5>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="card stat-card h-100">
+                                <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                                    <div class="stat-icon icon-primary mb-2" style="width:50px; height:50px; font-size:1.5rem;"><i class="bi bi-tv-fill"></i></div>
+                                    <div class="stat-title small">총 구독 수</div>
+                                    <div class="stat-value fs-3">${stats.countSubscriptions}</div>
+                                </div>
                             </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="searchType" value="member" id="searchMember" ${searchType == 'member' ? 'checked' : ''}>
-                                <label class="form-check-label" for="searchMember">파티원 이름</label>
+                        </div>
+                        <div class="col-6">
+                                                    <div class="card stat-card h-100">
+                                                        <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                                                            <div class="stat-icon icon-success mb-2" style="width:50px; height:50px; font-size:1.5rem;"><i class="bi bi-currency-dollar"></i></div>
+                                                            <div class="stat-title small">총 월 결제액</div>
+                                                            <div class="stat-value fs-3">${String.format("%,d", stats.sumTotalPrice)}</div>
+                                                        </div>
+                                                    </div>                        </div>
+                        <div class="col-6">
+                            <div class="card stat-card h-100">
+                                <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                                    <div class="stat-icon icon-warning mb-2" style="width:50px; height:50px; font-size:1.5rem;"><i class="bi bi-people-fill"></i></div>
+                                    <div class="stat-title small">전체 파티원</div>
+                                    <div class="stat-value fs-3">${stats.countAllPartyMembers}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="card stat-card h-100">
+                                <div class="card-body d-flex flex-column justify-content-center align-items-center">
+                                    <div class="stat-icon icon-info mb-2" style="width:50px; height:50px; font-size:1.5rem;"><i class="bi bi-check-circle-fill"></i></div>
+                                    <div class="stat-title small">입금 완료율</div>
+                                    <div class="stat-value fs-3">${String.format("%.0f", stats.paidPercentage)}%</div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <label class="form-label">검색어</label>
-                        <input type="text" class="form-control" name="keyword" placeholder="검색어를 입력하세요" value="${keyword}">
+                </div>
+
+                <!-- Search Form (Pushed to Bottom) -->
+                <div>
+                    <h5 class="mb-3 fw-bold mt-4"><i class="bi bi-search me-2"></i>구독 검색</h5>
+                    <div class="card">
+                        <div class="card-body d-flex align-items-center p-3">
+                            <form action="/list" method="get" class="row g-2 w-100 align-items-end m-0">
+                                <div class="col-md-4">
+                                    <label class="form-label small text-secondary mb-1">검색 조건</label>
+                                    <select class="form-select form-select-sm" name="searchType">
+                                        <option value="service" ${searchType != 'member' ? 'selected' : ''}>서비스명</option>
+                                        <option value="member" ${searchType == 'member' ? 'selected' : ''}>파티원 이름</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small text-secondary mb-1">검색어</label>
+                                    <input type="text" class="form-control form-select-sm" name="keyword" placeholder="검색어 입력" value="${keyword}">
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="submit" class="btn btn-secondary btn-sm w-100"><i class="bi bi-search"></i></button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                    <div class="col-md-2">
-                        <button type="submit" class="btn btn-secondary w-100"><i class="bi bi-search"></i> 검색</button>
-                    </div>
-                </form>
+                </div>
             </div>
+
+            <!-- Right: Calendar -->
+            <div class="col-lg-7">
+                <div class="d-flex flex-column h-100">
+                    <h5 class="mb-3 fw-bold"><i class="bi bi-calendar3 me-2"></i>구독 결제 달력</h5>
+                    <div class="card h-100">
+                        <div class="card-body p-3 pb-1">
+                            <div id="calendar" style="height: 100%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Filter -->
+        <div class="category-scroll-wrapper">
+            <button class="category-btn active" onclick="filterByCategory('all', this)">전체</button>
+            <button class="category-btn" onclick="filterByCategory('video', this)">영상 (OTT)</button>
+            <button class="category-btn" onclick="filterByCategory('music', this)">음악</button>
+            <button class="category-btn" onclick="filterByCategory('shopping', this)">쇼핑/생활</button>
+            <button class="category-btn" onclick="filterByCategory('work', this)">업무/유틸</button>
+            <button class="category-btn" onclick="filterByCategory('other', this)">기타</button>
         </div>
 
         <!-- Subscription List -->
@@ -155,10 +175,15 @@
                         <div class="col-md-6 mb-4 subscription-item">
                             <div class="card h-100">
                                 <div class="card-header d-flex justify-content-between align-items-center">
-                                    <span class="fw-bold"><i class="bi bi-tv me-2"></i>${sub.serviceName}</span>
-                                    <div class="btn-group">
+                                    <span class="fw-bold d-flex align-items-center">
+                                        <span class="service-logo-wrapper me-2" data-service="${sub.serviceName}">
+                                            <i class="bi bi-tv text-secondary"></i>
+                                        </span>
+                                        ${sub.serviceName}
+                                    </span>
+                                    <div class="d-flex align-items-center">
                                         <a href="/edit?seq=${sub.seq}" class="btn btn-icon" title="수정"><i class="bi bi-pencil-square"></i></a>
-                                        <form id="delete-form-${sub.seq}" action="/delete" method="post" style="display:inline;">
+                                        <form id="delete-form-${sub.seq}" action="/delete" method="post" class="ms-2">
                                             <input type="hidden" name="seq" value="${sub.seq}">
                                             <button type="button" class="btn btn-icon" title="삭제" onclick="confirmDelete(${sub.seq})"><i class="bi bi-trash3"></i></button>
                                         </form>
@@ -167,7 +192,7 @@
 
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between text-secondary mb-3">
-                                        <span>총 금액: <strong class="text-dark">${sub.totalPrice}원</strong></span>
+                                        <span>총 금액: <strong class="text-dark">${String.format("%,d", sub.totalPrice)}원</strong></span>
                                         <span>결제일: 매월 ${sub.billingDate}일</span>
                                     </div>
 
@@ -205,7 +230,7 @@
                                                     <c:forEach items="${sub.members}" var="member">
                                                         <tr>
                                                             <td>${member.memberName}</td>
-                                                            <td>${member.perPrice}원</td>
+                                                            <td>${String.format("%,d", member.perPrice)}원</td>
                                                             <td>
                                                                 <c:choose>
                                                                     <c:when test="${member.isPaid == 'Y'}">
@@ -219,7 +244,7 @@
                                                             <td class="text-end">
                                                                 <button class="btn btn-icon btn-sm" title="상태 변경" onclick="togglePaidStatus(${member.memberSeq}, '${member.isPaid}')"><i class="bi bi-arrow-repeat"></i></button>
                                                                 <c:if test="${member.isPaid == 'N'}">
-                                                                    <button class="btn btn-icon btn-sm" title="콕 찌르기" onclick="pokeUnpaidMember('${member.memberName}', '${sub.serviceName}', ${member.perPrice}, '${sub.accountNumber}')"><i class="bi bi-bell-fill"></i></button>
+                                                                    <button class="btn btn-icon btn-sm" title="콕 찌르기" onclick="pokeUnpaidMember('${member.memberName}', '${sub.serviceName}', ${member.perPrice}, '${sub.accountNumber}')"><i class="bi bi-hand-index-thumb-fill"></i></button>
                                                                 </c:if>
                                                             </td>
                                                         </tr>
@@ -252,7 +277,7 @@
             fetch('/togglePaid', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `memberSeq=${memberSeq}&currentStatus=${currentStatus}`
+                body: 'memberSeq=' + memberSeq + '&currentStatus=' + currentStatus
             })
             .then(res => res.json())
             .then(data => {
@@ -272,7 +297,7 @@
 
         function confirmDelete(seq) {
             showConfirmModal('구독 삭제', '정말 삭제하시겠습니까?', () => {
-                document.getElementById(`delete-form-${seq}`).submit();
+                document.getElementById('delete-form-' + seq).submit();
             });
         }
         
@@ -297,16 +322,168 @@
             const shareUrl = `${window.location.origin}/share/${uuid}`;
             copyToClipboard(shareUrl, '공유 링크가');
         }
+        
+        // Service Domain Mapping for Favicons
+        function getServiceDomain(serviceName) {
+            if (!serviceName) return null;
+            const name = serviceName.toLowerCase().replace(/\s/g, '');
+            
+            if (name.includes('netflix') || name.includes('넷플릭스')) return 'netflix.com';
+            if (name.includes('youtube') || name.includes('유튜브')) return 'youtube.com';
+            if (name.includes('tving') || name.includes('티빙')) return 'tving.com';
+            if (name.includes('wavve') || name.includes('웨이브')) return 'wavve.com';
+            if (name.includes('disney') || name.includes('디즈니')) return 'disneyplus.com';
+            if (name.includes('watcha') || name.includes('왓챠')) return 'watcha.com';
+            if (name.includes('melon') || name.includes('멜론')) return 'melon.com';
+            if (name.includes('spotify') || name.includes('스포티파이')) return 'spotify.com';
+            if (name.includes('genie') || name.includes('지니')) return 'genie.co.kr';
+            if (name.includes('bugs') || name.includes('벅스')) return 'bugs.co.kr';
+            if (name.includes('naver') || name.includes('네이버')) return 'naver.com';
+            if (name.includes('coupang') || name.includes('쿠팡')) return 'coupangplay.com';
+            if (name.includes('apple') || name.includes('애플') || name.includes('icloud')) return 'apple.com';
+            if (name.includes('laftel') || name.includes('라프텔')) return 'laftel.net';
+            if (name.includes('prime') || name.includes('amazon') || name.includes('아마존')) return 'primevideo.com';
+            
+            // AI & Productivity
+            if (name.includes('chatgpt') || name.includes('openai') || name.includes('gpt')) return 'openai.com';
+            if (name.includes('claude') || name.includes('클로드')) return 'anthropic.com';
+            if (name.includes('gemini') || name.includes('제미나이') || name.includes('바드')) return 'gstatic.com'; // Google DeepMind/Gemini
+            if (name.includes('midjourney') || name.includes('미드저니')) return 'midjourney.com';
+            if (name.includes('notion') || name.includes('노션')) return 'notion.so';
+            if (name.includes('deepl') || name.includes('딥엘')) return 'deepl.com';
+            if (name.includes('perplexity') || name.includes('퍼플렉시티')) return 'perplexity.ai';
+            
+            return null;
+        }
+
+        // Category Logic
+        function getCategory(serviceName) {
+            if (!serviceName) return 'other';
+            const name = serviceName.toLowerCase().replace(/\s/g, '');
+            
+            // Video / OTT
+            if (['netflix','youtube','tving','wavve','disney','watcha','laftel','coupangplay','prime','hbo','paramount'].some(k => name.includes(k))) return 'video';
+            
+            // Music
+            if (['melon','spotify','genie','bugs','flo','vibe','music'].some(k => name.includes(k))) return 'music';
+            
+            // Shopping / Life
+            if (['naver','coupang','kurly','smile','delivery','baemin','yogiyo'].some(k => name.includes(k))) return 'shopping';
+            
+            // Work / Utility / AI
+            if (['chatgpt','gpt','claude','gemini','midjourney','notion','deepl','perplexity','adobe','microsoft','office','zoom','slack','figma','dropbox','drive','cloud'].some(k => name.includes(k))) return 'work';
+            
+            return 'other';
+        }
+
+        function filterByCategory(category, btn) {
+            // Update Active Button
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            const items = document.querySelectorAll('.subscription-item');
+            let visibleCount = 0;
+            
+            items.forEach(item => {
+                const itemCategory = item.dataset.category;
+                if (category === 'all' || itemCategory === category) {
+                    item.style.display = 'block';
+                    // Add fade-in animation for better UX
+                    item.classList.remove('animate-fade-in-up');
+                    void item.offsetWidth; // trigger reflow
+                    item.classList.add('animate-fade-in-up');
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // Handle empty state (if needed, though not strictly required here)
+        }
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Categories for Items
+            document.querySelectorAll('.subscription-item').forEach(item => {
+                const serviceNameWrapper = item.querySelector('.service-logo-wrapper');
+                const serviceName = serviceNameWrapper ? serviceNameWrapper.dataset.service : '';
+                item.dataset.category = getCategory(serviceName);
+            });
+
+            // Load Service Logos
+            document.querySelectorAll('.service-logo-wrapper').forEach(wrapper => {
+                const serviceName = wrapper.dataset.service;
+                const domain = getServiceDomain(serviceName);
+                
+                if (domain) {
+                    const img = document.createElement('img');
+                    img.src = 'https://www.google.com/s2/favicons?domain=' + domain + '&sz=64';
+                    img.className = 'service-logo-img';
+                    img.alt = serviceName;
+                    img.style.width = '24px';
+                    img.style.height = '24px';
+                    img.style.borderRadius = '4px';
+                    
+                    // If image fails, keep the default icon
+                    img.onerror = function() {
+                        console.warn('Failed to load logo for:', serviceName);
+                        // Wrapper already contains the default icon, so just do nothing or revert if we cleared it
+                    };
+                    
+                    // Clear the default icon and append the image
+                    // But wait for load to prevent flickering? No, just replace.
+                    // Better: Append img, hide icon. If error, show icon.
+                    
+                    const defaultIcon = wrapper.querySelector('i');
+                    if (defaultIcon) defaultIcon.style.display = 'none';
+                    
+                    img.onload = function() {
+                         // Image loaded successfully
+                    };
+                    
+                    img.onerror = function() {
+                        if (defaultIcon) defaultIcon.style.display = 'inline-block';
+                        img.style.display = 'none';
+                    };
+                    
+                    wrapper.appendChild(img);
+                }
+            });
+
             // Calendar
             const calendarEl = document.getElementById('calendar');
             const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim();
+            // Brand Color Mapping Helper
+            function getBrandColor(serviceName) {
+                if (!serviceName) return '#007aff'; // Default Blue
+                
+                const name = serviceName.toLowerCase().replace(/\s/g, '');
+                
+                if (name.includes('netflix') || name.includes('넷플릭스')) return '#E50914';
+                if (name.includes('youtube') || name.includes('유튜브')) return '#FF0000';
+                if (name.includes('tving') || name.includes('티빙')) return '#FF143C';
+                if (name.includes('wavve') || name.includes('웨이브')) return '#1351F9';
+                if (name.includes('disney') || name.includes('디즈니')) return '#061840'; // Dark Blue
+                if (name.includes('watcha') || name.includes('왓챠')) return '#FF2F6E';
+                if (name.includes('melon') || name.includes('멜론')) return '#00CD3C';
+                if (name.includes('spotify') || name.includes('스포티파이')) return '#1DB954';
+                if (name.includes('genie') || name.includes('지니')) return '#2BB6E8';
+                if (name.includes('bugs') || name.includes('벅스')) return '#FE3C34';
+                if (name.includes('naver') || name.includes('네이버')) return '#03C75A';
+                if (name.includes('coupang') || name.includes('쿠팡')) return '#E4312B'; // Coupang Red
+                if (name.includes('apple') || name.includes('애플') || name.includes('icloud')) return '#2c2c2c';
+                if (name.includes('laftel') || name.includes('라프텔')) return '#816BFF';
+                if (name.includes('prime') || name.includes('amazon') || name.includes('아마존')) return '#00A8E1';
+                
+                return '#007aff'; // Fallback Default
+            }
+
             const subscriptions = [
                 <c:forEach items="${subscriptions}" var="sub" varStatus="status">
                 {
                     title: '${sub.serviceName}',
-                    start: new Date(new Date().getFullYear(), new Date().getMonth(), ${sub.billingDate}).toISOString().split('T')[0]
+                    start: new Date(new Date().getFullYear(), new Date().getMonth(), ${sub.billingDate}).toISOString().split('T')[0],
+                    backgroundColor: getBrandColor('${sub.serviceName}'),
+                    borderColor: getBrandColor('${sub.serviceName}')
                 }<c:if test="${!status.last}">,</c:if>
                 </c:forEach>
             ];
@@ -314,8 +491,13 @@
             const calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 locale: 'ko',
-                height: 'auto',
-                headerToolbar: { left: 'prev,next today', center: 'title', right: '' },
+                height: '100%',
+                expandRows: true,
+                headerToolbar: { 
+                    left: 'prev,next', 
+                    center: 'title', 
+                    right: 'today' 
+                },
                 buttonText: { today: '오늘' },
                 events: subscriptions,
                 dayMaxEvents: true,
