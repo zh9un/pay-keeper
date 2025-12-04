@@ -1,5 +1,6 @@
 package com.springboot.paykeeper.controller;
 
+import com.springboot.paykeeper.domain.PartyMemberDO;
 import com.springboot.paykeeper.domain.SubscriptionDO;
 import com.springboot.paykeeper.mapper.SubscriptionMapper;
 import com.springboot.paykeeper.service.SubscriptionService;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * SubscriptionController
@@ -54,6 +56,9 @@ public class SubscriptionController {
         } else {
             subscriptions = subscriptionService.getAllSubscriptions();
         }
+
+        // 대시보드 통계 데이터 추가
+        model.addAttribute("stats", subscriptionService.getDashboardStats());
 
         model.addAttribute("subscriptions", subscriptions);
         return "list"; // /views/list.jsp
@@ -111,6 +116,72 @@ public class SubscriptionController {
             // 기타 예외 처리
             model.addAttribute("error", "구독 등록 중 오류가 발생했습니다: " + e.getMessage());
             return "write";
+        }
+    }
+
+    // ===========================
+    // UPDATE - 구독 정보 수정
+    // ===========================
+
+    /**
+     * 수정 폼 화면
+     * GET /edit?seq=1
+     */
+    @GetMapping("/edit")
+    public String editForm(@RequestParam("seq") Integer seq, Model model) {
+        System.out.println("[Controller] GET /edit - seq: " + seq);
+
+        // 1. 기존 데이터 조회
+        SubscriptionDO subscription = subscriptionService.getSubscriptionById(seq);
+
+        // 2. 파티원 리스트를 콤마 문자열로 변환 (View용)
+        String memberNamesStr = subscription.getMembers().stream()
+                .map(PartyMemberDO::getMemberName)
+                .collect(Collectors.joining(","));
+
+        model.addAttribute("subscription", subscription);
+        model.addAttribute("memberNamesStr", memberNamesStr);
+
+        return "edit"; // /views/edit.jsp
+    }
+
+    /**
+     * 구독 수정 처리
+     * POST /update
+     */
+    @PostMapping("/update")
+    public String updateSubscription(
+            @RequestParam("seq") Integer seq,
+            @RequestParam("serviceName") String serviceName,
+            @RequestParam("totalPrice") Integer totalPrice,
+            @RequestParam("billingDate") Integer billingDate,
+            @RequestParam("memberNames") String memberNames,
+            Model model) {
+
+        System.out.println("[Controller] POST /update - seq: " + seq +
+                ", serviceName: " + serviceName + ", totalPrice: " + totalPrice +
+                ", billingDate: " + billingDate + ", memberNames: " + memberNames);
+
+        try {
+            SubscriptionDO subscription = new SubscriptionDO();
+            subscription.setSeq(seq);
+            subscription.setServiceName(serviceName);
+            subscription.setTotalPrice(totalPrice);
+            subscription.setBillingDate(billingDate);
+
+            subscriptionService.updateSubscription(subscription, memberNames);
+
+            return "redirect:/list";
+
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("subscription", subscriptionService.getSubscriptionById(seq));
+            return "edit";
+
+        } catch (Exception e) {
+            model.addAttribute("error", "구독 수정 중 오류가 발생했습니다: " + e.getMessage());
+            model.addAttribute("subscription", subscriptionService.getSubscriptionById(seq));
+            return "edit";
         }
     }
 

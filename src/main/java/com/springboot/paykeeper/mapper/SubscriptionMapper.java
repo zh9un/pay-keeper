@@ -105,6 +105,13 @@ public interface SubscriptionMapper {
      */
     int deletePartyMember(Integer memberSeq);
 
+    /**
+     * 특정 구독의 모든 파티원 삭제 (Update 시 사용)
+     * @param subSeq 구독 ID
+     * @return 삭제된 행 수
+     */
+    int deletePartyMembersBySubSeq(Integer subSeq);
+
     // ===========================
     // UTILITY Operations
     // ===========================
@@ -121,4 +128,22 @@ public interface SubscriptionMapper {
      * @return 파티원 수
      */
     int countPartyMembers(Integer subSeq);
+
+    /**
+     * 총 월 결제액 합계 조회 (모든 구독의 total_price 합산)
+     * @return 총 월 결제액
+     */
+    int sumTotalPrice();
+
+    /**
+     * 전체 파티원 수 조회
+     * @return 전체 파티원 수
+     */
+    int countAllPartyMembers();
+
+    /**
+     * 입금 완료 파티원 수 조회 (is_paid = 'Y')
+     * @return 입금 완료 파티원 수
+     */
+    int countPaidPartyMembers();
 }

@@ -1,5 +1,6 @@
 package com.springboot.paykeeper.service;
 
+import com.springboot.paykeeper.domain.DashboardStatsDO;
 import com.springboot.paykeeper.domain.SubscriptionDO;
 
 import java.util.List;
@@ -57,4 +58,10 @@ public interface SubscriptionService {
      * @param memberNames 수정할 파티원 이름들
      */
     void updateSubscription(SubscriptionDO subscription, String memberNames);
+
+    /**
+     * 대시보드 통계 조회
+     * @return 통계 데이터 (구독 수, 총 결제액, 파티원 수, 입금 완료 수)
+     */
+    DashboardStatsDO getDashboardStats();
 }

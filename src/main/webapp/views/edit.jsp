@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>새 구독 등록 - Pay Keeper</title>
+    <title>구독 수정 - Pay Keeper</title>
 
     <!-- Bootstrap 5 CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -16,8 +16,8 @@
 
     <style>
         .info-box {
-            background-color: #e7f3ff;
-            border-left: 4px solid #0d6efd;
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
             padding: 15px;
             margin-bottom: 20px;
             border-radius: 10px;
@@ -29,8 +29,8 @@
         <!-- Header -->
         <div class="row mb-4">
             <div class="col-md-12">
-                <h1><i class="bi bi-plus-circle"></i> 새 구독 등록</h1>
-                <p class="text-muted">OTT 구독 정보와 파티원 정보를 입력하세요</p>
+                <h1><i class="bi bi-pencil-square"></i> 구독 수정</h1>
+                <p class="text-muted">구독 정보와 파티원 정보를 수정하세요</p>
             </div>
         </div>
 
@@ -42,20 +42,22 @@
             </div>
         </c:if>
 
-        <!-- Info Box -->
+        <!-- Warning Box -->
         <div class="info-box">
-            <h6><i class="bi bi-info-circle"></i> 안내사항</h6>
+            <h6><i class="bi bi-exclamation-triangle"></i> 주의사항</h6>
             <ul class="mb-0">
+                <li>파티원 정보를 수정하면 <strong>기존 입금 상태가 초기화</strong>됩니다.</li>
                 <li>파티원 이름은 <strong>콤마(,)</strong>로 구분하여 입력하세요. (예: 철수,영희,민수)</li>
-                <li>인당 부담 금액은 <strong>자동으로 계산</strong>됩니다. (총 금액 ÷ (파티원 수 + 본인 1명))</li>
-                <li>입금 상태는 기본적으로 <strong>'미입금'</strong>으로 설정됩니다.</li>
+                <li>인당 부담 금액은 <strong>자동으로 재계산</strong>됩니다.</li>
             </ul>
         </div>
 
-        <!-- Registration Form -->
+        <!-- Edit Form -->
         <div class="card shadow-sm">
             <div class="card-body">
-                <form action="/create" method="post" onsubmit="return validateForm()">
+                <form action="/update" method="post" onsubmit="return validateForm()">
+                    <!-- Hidden Field: seq -->
+                    <input type="hidden" name="seq" value="${subscription.seq}">
 
                     <!-- 구독 정보 섹션 -->
                     <h5 class="border-bottom pb-2 mb-3">
@@ -69,6 +71,7 @@
                             </label>
                             <input type="text" class="form-control" id="serviceName"
                                    name="serviceName" placeholder="예: 넷플릭스 프리미엄"
+                                   value="${subscription.serviceName}"
                                    required maxlength="100">
                             <div class="form-text">
                                 구독 중인 OTT 서비스 이름을 입력하세요
@@ -82,6 +85,7 @@
                             <div class="input-group">
                                 <input type="number" class="form-control" id="totalPrice"
                                        name="totalPrice" placeholder="17000"
+                                       value="${subscription.totalPrice}"
                                        required min="1" max="999999">
                                 <span class="input-group-text">원</span>
                             </div>
@@ -97,6 +101,7 @@
                             <div class="input-group">
                                 <input type="number" class="form-control" id="billingDate"
                                        name="billingDate" placeholder="15"
+                                       value="${subscription.billingDate}"
                                        required min="1" max="31">
                                 <span class="input-group-text">일</span>
                             </div>
@@ -117,7 +122,7 @@
                         </label>
                         <textarea class="form-control" id="memberNames" name="memberNames"
                                   rows="3" placeholder="철수,영희,민수,본인"
-                                  required></textarea>
+                                  required>${memberNamesStr}</textarea>
                         <div class="form-text">
                             <i class="bi bi-lightbulb"></i>
                             파티원 이름을 <strong>콤마(,)</strong>로 구분하여 입력하세요.
@@ -140,8 +145,8 @@
                         <a href="/list" class="btn btn-secondary">
                             <i class="bi bi-arrow-left"></i> 취소
                         </a>
-                        <button type="submit" class="btn btn-primary btn-lg">
-                            <i class="bi bi-check-circle"></i> 등록하기
+                        <button type="submit" class="btn btn-warning btn-lg">
+                            <i class="bi bi-check-circle"></i> 수정하기
                         </button>
                     </div>
                 </form>
@@ -157,6 +162,9 @@
 
     <!-- Form Validation & Preview -->
     <script>
+        // 페이지 로드 시 초기 계산 미리보기 표시
+        window.addEventListener('DOMContentLoaded', updatePreview);
+
         // 실시간 계산 미리보기
         document.getElementById('totalPrice').addEventListener('input', updatePreview);
         document.getElementById('memberNames').addEventListener('input', updatePreview);

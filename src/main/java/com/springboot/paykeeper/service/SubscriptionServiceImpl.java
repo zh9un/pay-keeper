@@ -1,5 +1,6 @@
 package com.springboot.paykeeper.service;
 
+import com.springboot.paykeeper.domain.DashboardStatsDO;
 import com.springboot.paykeeper.domain.PartyMemberDO;
 import com.springboot.paykeeper.domain.SubscriptionDO;
 import com.springboot.paykeeper.mapper.SubscriptionMapper;
@@ -112,12 +113,42 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Override
     @Transactional
     public void updateSubscription(SubscriptionDO subscription, String memberNames) {
-        // 1. 구독 정보 수정
+        // 1. 입력값 검증 (기존 로직 활용)
+        validateSubscriptionInput(subscription, memberNames);
+
+        // 2. 구독 정보(부모) 수정
         subscriptionMapper.updateSubscription(subscription);
 
-        // 2. 기존 파티원 삭제 후 새로 등록 (간단한 방식)
-        // 실제로는 더 복잡한 로직이 필요할 수 있음
-        // (예: 기존 파티원 유지 + 새 파티원 추가/삭제)
+        // 3. 기존 파티원 전체 삭제 (초기화)
+        subscriptionMapper.deletePartyMembersBySubSeq(subscription.getSeq());
+        System.out.println("[Service] 기존 파티원 전체 삭제 완료 - subSeq: " + subscription.getSeq());
+
+        // 4. 새 파티원 목록 생성 및 1/N 계산
+        List<String> nameList = parseMemberNames(memberNames);
+        int totalMemberCount = nameList.size() + 1; // 본인 포함
+        int perPrice = calculatePerPrice(subscription.getTotalPrice(), totalMemberCount);
+
+        System.out.println("[Service] 수정 - 1/N 계산: " + subscription.getTotalPrice() +
+                " ÷ " + totalMemberCount + " = " + perPrice + "원");
+
+        // 5. 파티원 객체 생성
+        List<PartyMemberDO> members = new ArrayList<>();
+        for (String name : nameList) {
+            PartyMemberDO member = new PartyMemberDO();
+            member.setSubSeq(subscription.getSeq());
+            member.setMemberName(name.trim());
+            member.setPerPrice(perPrice);
+            member.setIsPaid("N"); // 초기화
+            members.add(member);
+        }
+
+        // 6. 파티원 재등록 (배치 Insert)
+        if (!members.isEmpty()) {
+            subscriptionMapper.insertPartyMembers(members);
+            System.out.println("[Service] 파티원 " + members.size() + "명 재등록 완료");
+        }
+
+        System.out.println("[Service] 구독 수정 완료 - seq: " + subscription.getSeq());
     }
 
     // ===========================
@@ -188,5 +219,34 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         if (memberNames == null || memberNames.trim().isEmpty()) {
             throw new IllegalArgumentException("파티원 이름을 입력해주세요.");
         }
+    }
+
+    // ===========================
+    // STATISTICS Operations
+    // ===========================
+
+    /**
+     * 대시보드 통계 조회
+     * @return 통계 데이터 객체
+     */
+    @Override
+    public DashboardStatsDO getDashboardStats() {
+        DashboardStatsDO stats = new DashboardStatsDO();
+
+        // 1. 총 구독 수
+        stats.setCountSubscriptions(subscriptionMapper.countSubscriptions());
+
+        // 2. 총 월 결제액
+        stats.setSumTotalPrice(subscriptionMapper.sumTotalPrice());
+
+        // 3. 전체 파티원 수
+        stats.setCountAllPartyMembers(subscriptionMapper.countAllPartyMembers());
+
+        // 4. 입금 완료 파티원 수
+        stats.setCountPaidPartyMembers(subscriptionMapper.countPaidPartyMembers());
+
+        System.out.println("[Service] 통계 조회 완료 - " + stats);
+
+        return stats;
     }
 }

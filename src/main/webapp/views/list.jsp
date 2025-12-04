@@ -11,12 +11,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
 
-    <style>
-        .paid-badge { color: #0d6efd; font-weight: bold; }
-        .unpaid-badge { color: #dc3545; font-weight: bold; }
-        .card-header { background-color: #f8f9fa; font-weight: bold; }
-        .member-row:hover { background-color: #f8f9fa; }
-    </style>
+    <!-- Custom Enhanced Styles -->
+    <link href="/css/custom-style.css" rel="stylesheet">
 </head>
 <body>
     <div class="container mt-5">
@@ -30,6 +26,129 @@
                 <a href="/write" class="btn btn-primary btn-lg">
                     <i class="bi bi-plus-circle"></i> 새 구독 등록
                 </a>
+            </div>
+        </div>
+
+        <!-- User Guide (Collapsible) -->
+        <div class="card mb-4 border-info">
+            <div class="card-header" data-bs-toggle="collapse" data-bs-target="#userGuide" aria-expanded="true" aria-controls="userGuide">
+                <h5 class="mb-0 d-flex justify-content-between align-items-center">
+                    <span>
+                        <i class="bi bi-question-circle-fill"></i> 사용 안내
+                    </span>
+                    <i class="bi bi-chevron-down" id="guideToggleIcon"></i>
+                </h5>
+            </div>
+            <div id="userGuide" class="collapse show">
+                <div class="card-body">
+                    <h6 class="text-info"><i class="bi bi-info-circle"></i> Pay Keeper 사용 방법</h6>
+                    <p class="text-muted">OTT 구독 공유 및 정산을 쉽게 관리할 수 있는 시스템입니다.</p>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="border-bottom pb-2"><i class="bi bi-1-circle-fill text-primary"></i> 구독 등록하기</h6>
+                            <ol class="small">
+                                <li>우측 상단 <span class="badge bg-primary">새 구독 등록</span> 버튼 클릭</li>
+                                <li>서비스명, 총 금액, 결제일 입력</li>
+                                <li>파티원 이름을 <strong>콤마(,)</strong>로 구분하여 입력 (예: 철수,영희,민수)</li>
+                                <li>인당 부담 금액이 <strong>자동 계산</strong>됩니다</li>
+                                <li>"등록하기" 버튼으로 저장</li>
+                            </ol>
+
+                            <h6 class="border-bottom pb-2 mt-3"><i class="bi bi-2-circle-fill text-success"></i> 입금 상태 관리</h6>
+                            <ul class="small">
+                                <li>각 파티원 옆의 <span class="badge bg-primary">변경</span> 버튼 클릭</li>
+                                <li><span class="text-danger">미입금</span> ↔ <span class="text-primary">완료</span> 상태 전환</li>
+                                <li>실시간으로 상태가 변경됩니다</li>
+                            </ul>
+                        </div>
+
+                        <div class="col-md-6">
+                            <h6 class="border-bottom pb-2"><i class="bi bi-3-circle-fill text-warning"></i> 구독 수정하기</h6>
+                            <ul class="small">
+                                <li>구독 카드 우측 상단 <span class="badge bg-warning">수정</span> 버튼 클릭</li>
+                                <li>서비스명, 금액, 파티원 정보 수정 가능</li>
+                                <li><strong>주의:</strong> 파티원 수정 시 입금 상태 초기화됨</li>
+                            </ul>
+
+                            <h6 class="border-bottom pb-2 mt-3"><i class="bi bi-4-circle-fill text-danger"></i> 구독 삭제하기</h6>
+                            <ul class="small">
+                                <li>구독 카드 우측 상단 <span class="badge bg-danger">삭제</span> 버튼 클릭</li>
+                                <li>확인 창에서 "확인" 선택</li>
+                                <li>파티원 정보도 함께 삭제됩니다</li>
+                            </ul>
+
+                            <h6 class="border-bottom pb-2 mt-3"><i class="bi bi-5-circle-fill text-secondary"></i> 검색 기능</h6>
+                            <ul class="small">
+                                <li><strong>서비스명</strong> 또는 <strong>파티원 이름</strong>으로 검색 가능</li>
+                                <li>검색 조건 선택 후 키워드 입력</li>
+                                <li><span class="badge bg-success">검색</span> 버튼 클릭</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-light border mt-3 mb-0">
+                        <i class="bi bi-lightbulb-fill text-warning"></i>
+                        <strong>Tip:</strong> 상단 통계 대시보드에서 전체 구독 현황을 한눈에 확인할 수 있습니다.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Statistics -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card border-primary">
+                    <div class="card-body text-center">
+                        <div class="text-primary mb-2">
+                            <i class="bi bi-tv-fill" style="font-size: 2rem;"></i>
+                        </div>
+                        <h5 class="card-title">총 구독 수</h5>
+                        <h2 class="text-primary mb-0"><span class="stat-number">${stats.countSubscriptions}</span>개</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card border-success">
+                    <div class="card-body text-center">
+                        <div class="text-success mb-2">
+                            <i class="bi bi-currency-dollar" style="font-size: 2rem;"></i>
+                        </div>
+                        <h5 class="card-title">총 월 결제액</h5>
+                        <h2 class="text-success mb-0"><span class="stat-number">${stats.sumTotalPrice}</span>원</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card border-info">
+                    <div class="card-body text-center">
+                        <div class="text-info mb-2">
+                            <i class="bi bi-people-fill" style="font-size: 2rem;"></i>
+                        </div>
+                        <h5 class="card-title">전체 파티원</h5>
+                        <h2 class="text-info mb-0"><span class="stat-number">${stats.countAllPartyMembers}</span>명</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="card border-warning">
+                    <div class="card-body text-center">
+                        <div class="text-warning mb-2">
+                            <i class="bi bi-check-circle-fill" style="font-size: 2rem;"></i>
+                        </div>
+                        <h5 class="card-title">입금 완료</h5>
+                        <h2 class="text-warning mb-0"><span class="stat-number">${stats.countPaidPartyMembers}</span>명</h2>
+                        <small class="text-muted d-block mb-2">
+                            (${String.format("%.1f", stats.paidPercentage)}%)
+                        </small>
+                        <div class="progress" style="height: 6px;">
+                            <div class="progress-bar" role="progressbar"
+                                 style="width: ${stats.paidPercentage}%;"
+                                 aria-valuenow="${stats.paidPercentage}"
+                                 aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -89,13 +208,17 @@
                                     <span>
                                         <i class="bi bi-tv"></i> ${sub.serviceName}
                                     </span>
-                                    <form action="/delete" method="post" style="display:inline;"
-                                          onsubmit="return confirm('정말 삭제하시겠습니까?');">
-                                        <input type="hidden" name="seq" value="${sub.seq}">
-                                        <button type="submit" class="btn btn-sm btn-danger">
-                                            <i class="bi bi-trash"></i> 삭제
-                                        </button>
-                                    </form>
+                                    <div>
+                                        <a href="/edit?seq=${sub.seq}" class="btn btn-sm btn-outline-primary me-1">
+                                            <i class="bi bi-pencil-square"></i> 수정
+                                        </a>
+                                        <form id="delete-form-${sub.seq}" action="/delete" method="post" style="display:inline;">
+                                            <input type="hidden" name="seq" value="${sub.seq}">
+                                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="confirmDelete(${sub.seq})">
+                                                <i class="bi bi-trash3"></i> 삭제
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
 
                                 <!-- Card Body: 가격 및 결제일 -->
@@ -152,7 +275,7 @@
                                                             <td>
                                                                 <button class="btn btn-sm btn-outline-primary"
                                                                         onclick="togglePaidStatus(${member.memberSeq}, '${member.isPaid}')">
-                                                                    <i class="bi bi-arrow-repeat"></i> 토글
+                                                                    <i class="bi bi-arrow-repeat"></i> 변경
                                                                 </button>
                                                             </td>
                                                         </tr>
@@ -181,10 +304,16 @@
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+    <!-- Custom UI Enhancements -->
+    <script src="/js/ui-enhancements.js"></script>
+
     <!-- AJAX: 입금 상태 토글 -->
     <script>
         function togglePaidStatus(memberSeq, currentStatus) {
             console.log('Toggle 요청:', memberSeq, currentStatus);
+
+            // 로딩 스피너 표시
+            Loading.show();
 
             // Fetch API로 AJAX 요청
             fetch('/togglePaid', {
@@ -197,19 +326,46 @@
             .then(response => response.json())
             .then(data => {
                 console.log('서버 응답:', data);
+                Loading.hide();
 
                 if (data.success) {
+                    // 성공 토스트 표시
+                    Toast.success('입금 상태가 변경되었습니다');
                     // 페이지 새로고침으로 상태 업데이트
-                    location.reload();
+                    setTimeout(() => location.reload(), 800);
                 } else {
-                    alert('오류: ' + data.message);
+                    // 에러 토스트 표시
+                    Toast.error(data.message);
                 }
             })
             .catch(error => {
                 console.error('AJAX 오류:', error);
-                alert('상태 변경 중 오류가 발생했습니다.');
+                Loading.hide();
+                Toast.error('상태 변경 중 오류가 발생했습니다');
             });
         }
+
+        // 삭제 확인 모달
+        function confirmDelete(seq) {
+            showConfirmModal(
+                '구독 삭제',
+                '정말 삭제하시겠습니까? 파티원 정보도 함께 삭제됩니다.',
+                function() {
+                    document.getElementById('delete-form-' + seq).submit();
+                }
+            );
+        }
+
+        // 사용 안내 펼치기/접기 아이콘 회전
+        document.getElementById('userGuide').addEventListener('show.bs.collapse', function () {
+            document.getElementById('guideToggleIcon').classList.remove('bi-chevron-down');
+            document.getElementById('guideToggleIcon').classList.add('bi-chevron-up');
+        });
+
+        document.getElementById('userGuide').addEventListener('hide.bs.collapse', function () {
+            document.getElementById('guideToggleIcon').classList.remove('bi-chevron-up');
+            document.getElementById('guideToggleIcon').classList.add('bi-chevron-down');
+        });
     </script>
 </body>
 </html>

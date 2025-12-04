@@ -166,6 +166,12 @@
         WHERE member_seq = #{memberSeq}
     </delete>
 
+    <!-- 특정 구독의 모든 파티원 삭제 (Update 시 사용) -->
+    <delete id="deletePartyMembersBySubSeq" parameterType="int">
+        DELETE FROM party_member
+        WHERE sub_seq = #{subSeq}
+    </delete>
+
     <!-- ===========================
          UTILITY Operations
          =========================== -->
@@ -179,6 +185,21 @@
     <select id="countPartyMembers" parameterType="int" resultType="int">
         SELECT COUNT(*) FROM party_member
         WHERE sub_seq = #{subSeq}
+    </select>
+
+    <!-- 총 월 결제액 합계 조회 -->
+    <select id="sumTotalPrice" resultType="int">
+        SELECT COALESCE(SUM(total_price), 0) FROM subscription
+    </select>
+
+    <!-- 전체 파티원 수 조회 -->
+    <select id="countAllPartyMembers" resultType="int">
+        SELECT COUNT(*) FROM party_member
+    </select>
+
+    <!-- 입금 완료 파티원 수 조회 -->
+    <select id="countPaidPartyMembers" resultType="int">
+        SELECT COUNT(*) FROM party_member WHERE is_paid = 'Y'
     </select>
 
 </mapper>
