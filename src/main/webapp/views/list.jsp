@@ -11,6 +11,10 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
 
+    <!-- FullCalendar CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
     <!-- Custom Enhanced Styles -->
     <link href="/css/custom-style.css" rel="stylesheet">
 </head>
@@ -152,6 +156,18 @@
             </div>
         </div>
 
+        <!-- Calendar View (결제일 달력) -->
+        <div class="card mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-calendar3"></i> 구독 결제 달력
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="calendar"></div>
+            </div>
+        </div>
+
         <!-- Search Form -->
         <div class="card mb-4">
             <div class="card-body">
@@ -245,6 +261,20 @@
                                             </div>
                                         </div>
                                     </c:if>
+
+                                    <!-- 공유 링크 -->
+                                    <div class="row mb-3">
+                                        <div class="col-12">
+                                            <strong><i class="bi bi-link-45deg"></i> 공유 링크:</strong>
+                                            <button class="btn btn-sm btn-outline-info ms-2"
+                                                    onclick="copyShareLink('${sub.shareUuid}')">
+                                                <i class="bi bi-share"></i> 링크 복사
+                                            </button>
+                                            <small class="text-muted d-block mt-1">
+                                                파티원과 공유하여 입금 현황을 확인하게 하세요
+                                            </small>
+                                        </div>
+                                    </div>
 
                                     <!-- 파티원 목록 -->
                                     <h6 class="border-bottom pb-2">
@@ -401,6 +431,94 @@
                 console.error('복사 실패:', err);
             });
         }
+
+        // 공유 링크 복사 기능
+        function copyShareLink(uuid) {
+            const shareUrl = window.location.origin + '/share/' + uuid;
+            navigator.clipboard.writeText(shareUrl).then(function() {
+                Toast.success('공유 링크가 복사되었습니다! 파티원에게 전달하세요');
+            }).catch(function(err) {
+                Toast.error('복사에 실패했습니다');
+                console.error('복사 실패:', err);
+            });
+        }
+
+        // ===========================
+        // FullCalendar 초기화
+        // ===========================
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+
+            // JSTL 데이터를 JavaScript 배열로 변환
+            const subscriptions = [
+                <c:forEach items="${subscriptions}" var="sub" varStatus="status">
+                {
+                    serviceName: '${sub.serviceName}',
+                    billingDate: ${sub.billingDate},
+                    totalPrice: ${sub.totalPrice}
+                }<c:if test="${!status.last}">,</c:if>
+                </c:forEach>
+            ];
+
+            // 현재 월의 이벤트 생성
+            const currentDate = new Date();
+            const currentYear = currentDate.getFullYear();
+            const currentMonth = currentDate.getMonth(); // 0-based (0 = January)
+
+            const events = [];
+            subscriptions.forEach(function(sub) {
+                let billingDay = sub.billingDate;
+
+                // 해당 월의 마지막 날짜 확인 (예: 2월은 28/29일, 4월은 30일)
+                const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+                // billingDate가 해당 월의 마지막 날을 초과하면 마지막 날로 조정
+                if (billingDay > lastDayOfMonth) {
+                    billingDay = lastDayOfMonth;
+                }
+
+                // 이벤트 날짜 생성 (YYYY-MM-DD 형식)
+                const eventDate = currentYear + '-' +
+                                  String(currentMonth + 1).padStart(2, '0') + '-' +
+                                  String(billingDay).padStart(2, '0');
+
+                events.push({
+                    title: sub.serviceName + ' (' + sub.totalPrice.toLocaleString() + '원)',
+                    start: eventDate,
+                    backgroundColor: '#0d6efd',
+                    borderColor: '#0d6efd',
+                    textColor: '#ffffff'
+                });
+            });
+
+            // FullCalendar 초기화
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'ko',
+                height: 'auto',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth'
+                },
+                buttonText: {
+                    today: '오늘',
+                    month: '월'
+                },
+                events: events,
+                eventTimeFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    meridiem: false
+                },
+                dayMaxEvents: true,
+                moreLinkText: function(num) {
+                    return '+' + num + '개';
+                }
+            });
+
+            calendar.render();
+        });
 
         // 사용 안내 펼치기/접기 아이콘 회전
         document.getElementById('userGuide').addEventListener('show.bs.collapse', function () {

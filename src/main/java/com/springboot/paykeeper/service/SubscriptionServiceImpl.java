@@ -84,6 +84,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
+    public SubscriptionDO getSubscriptionByUuid(String uuid) {
+        return subscriptionMapper.selectByUuid(uuid);
+    }
+
+    @Override
     public List<SubscriptionDO> searchSubscriptions(String searchType, String keyword) {
         // 검색 타입이 비어있거나 키워드가 없으면 전체 목록 반환
         if (searchType == null || searchType.isEmpty() ||

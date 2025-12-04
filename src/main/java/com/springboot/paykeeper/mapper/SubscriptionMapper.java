@@ -60,6 +60,13 @@ public interface SubscriptionMapper {
     List<SubscriptionDO> searchSubscriptions(@Param("searchType") String searchType,
                                                @Param("keyword") String keyword);
 
+    /**
+     * UUID로 구독 조회 (게스트 공유 링크용)
+     * @param uuid 공유 링크 UUID
+     * @return 구독 정보 (파티원 포함)
+     */
+    SubscriptionDO selectByUuid(String uuid);
+
     // ===========================
     // UPDATE Operations
     // ===========================

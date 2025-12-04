@@ -23,6 +23,7 @@ CREATE TABLE subscription (
     total_price INT NOT NULL COMMENT '월 총 결제 금액',
     billing_date INT NOT NULL COMMENT '결제일 (1~31)',
     account_number VARCHAR(100) COMMENT '입금 계좌번호 (예: 카카오뱅크 3333-xx-xxxx)',
+    share_uuid VARCHAR(36) UNIQUE COMMENT '공유 링크용 UUID',
     regdate TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
 
     -- Constraints

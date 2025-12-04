@@ -24,6 +24,7 @@
         <result property="totalPrice" column="total_price"/>
         <result property="billingDate" column="billing_date"/>
         <result property="accountNumber" column="account_number"/>
+        <result property="shareUuid" column="share_uuid"/>
         <result property="regdate" column="regdate"/>
 
         <!-- 1:N Collection Mapping -->
@@ -36,11 +37,11 @@
          CREATE Operations
          =========================== -->
 
-    <!-- 구독 등록 (useGeneratedKeys로 seq 자동 반환) -->
+    <!-- 구독 등록 (useGeneratedKeys로 seq 자동 반환, UUID 자동 생성) -->
     <insert id="insertSubscription" parameterType="SubscriptionDO"
             useGeneratedKeys="true" keyProperty="seq" keyColumn="seq">
-        INSERT INTO subscription (service_name, total_price, billing_date, account_number)
-        VALUES (#{serviceName}, #{totalPrice}, #{billingDate}, #{accountNumber})
+        INSERT INTO subscription (service_name, total_price, billing_date, account_number, share_uuid)
+        VALUES (#{serviceName}, #{totalPrice}, #{billingDate}, #{accountNumber}, UUID())
     </insert>
 
     <!-- 파티원 일괄 등록 (foreach 배치 삽입) -->
@@ -64,6 +65,7 @@
             s.total_price,
             s.billing_date,
             s.account_number,
+            s.share_uuid,
             s.regdate,
             pm.member_seq,
             pm.sub_seq,
@@ -83,6 +85,7 @@
             s.total_price,
             s.billing_date,
             s.account_number,
+            s.share_uuid,
             s.regdate,
             pm.member_seq,
             pm.sub_seq,
@@ -103,6 +106,7 @@
             s.total_price,
             s.billing_date,
             s.account_number,
+            s.share_uuid,
             s.regdate,
             pm.member_seq,
             pm.sub_seq,
@@ -123,6 +127,27 @@
             </if>
         </where>
         ORDER BY s.seq DESC, pm.member_seq ASC
+    </select>
+
+    <!-- UUID로 구독 조회 (게스트 공유 링크용) -->
+    <select id="selectByUuid" parameterType="string" resultMap="SubscriptionWithMembersResultMap">
+        SELECT
+            s.seq,
+            s.service_name,
+            s.total_price,
+            s.billing_date,
+            s.account_number,
+            s.share_uuid,
+            s.regdate,
+            pm.member_seq,
+            pm.sub_seq,
+            pm.member_name,
+            pm.per_price,
+            pm.is_paid
+        FROM subscription s
+        LEFT JOIN party_member pm ON s.seq = pm.sub_seq
+        WHERE s.share_uuid = #{uuid}
+        ORDER BY pm.member_seq ASC
     </select>
 
     <!-- ===========================

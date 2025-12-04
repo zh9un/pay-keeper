@@ -18,6 +18,7 @@ public class SubscriptionDO {
     private Integer totalPrice;       // 월 총 결제 금액
     private Integer billingDate;      // 결제일 (1~31)
     private String accountNumber;     // 입금 계좌번호 (예: 카카오뱅크 3333-xx-xxxx)
+    private String shareUuid;         // 공유 링크용 UUID
     private Timestamp regdate;        // 등록일시
 
     // 1:N Relationship - 파티원 목록
@@ -78,6 +79,14 @@ public class SubscriptionDO {
 
     public void setAccountNumber(String accountNumber) {
         this.accountNumber = accountNumber;
+    }
+
+    public String getShareUuid() {
+        return shareUuid;
+    }
+
+    public void setShareUuid(String shareUuid) {
+        this.shareUuid = shareUuid;
     }
 
     public Timestamp getRegdate() {
@@ -170,6 +179,7 @@ public class SubscriptionDO {
                 ", totalPrice=" + totalPrice +
                 ", billingDate=" + billingDate +
                 ", accountNumber='" + accountNumber + '\'' +
+                ", shareUuid='" + shareUuid + '\'' +
                 ", regdate=" + regdate +
                 ", membersCount=" + getMemberCount() +
                 '}';
