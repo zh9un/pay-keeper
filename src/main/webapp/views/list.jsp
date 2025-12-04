@@ -233,6 +233,19 @@
                                         </div>
                                     </div>
 
+                                    <c:if test="${not empty sub.accountNumber}">
+                                        <div class="row mb-3">
+                                            <div class="col-12">
+                                                <strong><i class="bi bi-bank"></i> 입금 계좌:</strong>
+                                                <span class="text-success">${sub.accountNumber}</span>
+                                                <button class="btn btn-sm btn-outline-success ms-2"
+                                                        onclick="copyAccountNumber('${sub.accountNumber}')">
+                                                    <i class="bi bi-clipboard"></i> 복사
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </c:if>
+
                                     <!-- 파티원 목록 -->
                                     <h6 class="border-bottom pb-2">
                                         <i class="bi bi-people"></i> 파티원 목록
@@ -250,7 +263,7 @@
                                                         <th>이름</th>
                                                         <th>부담 금액</th>
                                                         <th>입금 상태</th>
-                                                        <th>입금 확인</th>
+                                                        <th>관리</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -273,10 +286,16 @@
                                                                 </c:choose>
                                                             </td>
                                                             <td>
-                                                                <button class="btn btn-sm btn-outline-primary"
+                                                                <button class="btn btn-sm btn-outline-primary me-1"
                                                                         onclick="togglePaidStatus(${member.memberSeq}, '${member.isPaid}')">
                                                                     <i class="bi bi-arrow-repeat"></i> 변경
                                                                 </button>
+                                                                <c:if test="${member.isPaid == 'N'}">
+                                                                    <button class="btn btn-sm btn-outline-warning"
+                                                                            onclick="pokeUnpaidMember('${member.memberName}', '${sub.serviceName}', ${member.perPrice}, '${sub.accountNumber}')">
+                                                                        <i class="bi bi-bell-fill"></i> 콕 찌르기
+                                                                    </button>
+                                                                </c:if>
                                                             </td>
                                                         </tr>
                                                     </c:forEach>
@@ -354,6 +373,33 @@
                     document.getElementById('delete-form-' + seq).submit();
                 }
             );
+        }
+
+        // 계좌번호 복사 기능
+        function copyAccountNumber(accountNumber) {
+            navigator.clipboard.writeText(accountNumber).then(function() {
+                Toast.success('계좌번호가 복사되었습니다!');
+            }).catch(function(err) {
+                Toast.error('복사에 실패했습니다');
+                console.error('복사 실패:', err);
+            });
+        }
+
+        // 콕 찌르기 (미입금자 독촉 메시지 복사)
+        function pokeUnpaidMember(memberName, serviceName, perPrice, accountNumber) {
+            const currentMonth = new Date().getMonth() + 1;
+            let message = `${memberName}님, [${serviceName}] ${currentMonth}월 구독료 ${perPrice.toLocaleString()}원 입금 부탁드려요!`;
+
+            if (accountNumber && accountNumber.trim() !== '') {
+                message += `\n계좌: ${accountNumber}`;
+            }
+
+            navigator.clipboard.writeText(message).then(function() {
+                Toast.success('독촉 메시지가 복사되었습니다! 카톡에 붙여넣기 하세요');
+            }).catch(function(err) {
+                Toast.error('복사에 실패했습니다');
+                console.error('복사 실패:', err);
+            });
         }
 
         // 사용 안내 펼치기/접기 아이콘 회전

@@ -87,12 +87,13 @@ public class SubscriptionController {
             @RequestParam("serviceName") String serviceName,
             @RequestParam("totalPrice") Integer totalPrice,
             @RequestParam("billingDate") Integer billingDate,
+            @RequestParam(value = "accountNumber", required = false) String accountNumber,
             @RequestParam("memberNames") String memberNames,
             Model model) {
 
         System.out.println("[Controller] POST /create - serviceName: " + serviceName +
                 ", totalPrice: " + totalPrice + ", billingDate: " + billingDate +
-                ", memberNames: " + memberNames);
+                ", accountNumber: " + accountNumber + ", memberNames: " + memberNames);
 
         try {
             // SubscriptionDO 객체 생성
@@ -100,6 +101,7 @@ public class SubscriptionController {
             subscription.setServiceName(serviceName);
             subscription.setTotalPrice(totalPrice);
             subscription.setBillingDate(billingDate);
+            subscription.setAccountNumber(accountNumber);
 
             // Service 호출 (1/N 계산 + 트랜잭션 처리)
             subscriptionService.createSubscription(subscription, memberNames);
@@ -155,12 +157,14 @@ public class SubscriptionController {
             @RequestParam("serviceName") String serviceName,
             @RequestParam("totalPrice") Integer totalPrice,
             @RequestParam("billingDate") Integer billingDate,
+            @RequestParam(value = "accountNumber", required = false) String accountNumber,
             @RequestParam("memberNames") String memberNames,
             Model model) {
 
         System.out.println("[Controller] POST /update - seq: " + seq +
                 ", serviceName: " + serviceName + ", totalPrice: " + totalPrice +
-                ", billingDate: " + billingDate + ", memberNames: " + memberNames);
+                ", billingDate: " + billingDate + ", accountNumber: " + accountNumber +
+                ", memberNames: " + memberNames);
 
         try {
             SubscriptionDO subscription = new SubscriptionDO();
@@ -168,6 +172,7 @@ public class SubscriptionController {
             subscription.setServiceName(serviceName);
             subscription.setTotalPrice(totalPrice);
             subscription.setBillingDate(billingDate);
+            subscription.setAccountNumber(accountNumber);
 
             subscriptionService.updateSubscription(subscription, memberNames);
 

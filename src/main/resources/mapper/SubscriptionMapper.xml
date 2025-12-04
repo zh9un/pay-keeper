@@ -23,6 +23,7 @@
         <result property="serviceName" column="service_name"/>
         <result property="totalPrice" column="total_price"/>
         <result property="billingDate" column="billing_date"/>
+        <result property="accountNumber" column="account_number"/>
         <result property="regdate" column="regdate"/>
 
         <!-- 1:N Collection Mapping -->
@@ -38,8 +39,8 @@
     <!-- 구독 등록 (useGeneratedKeys로 seq 자동 반환) -->
     <insert id="insertSubscription" parameterType="SubscriptionDO"
             useGeneratedKeys="true" keyProperty="seq" keyColumn="seq">
-        INSERT INTO subscription (service_name, total_price, billing_date)
-        VALUES (#{serviceName}, #{totalPrice}, #{billingDate})
+        INSERT INTO subscription (service_name, total_price, billing_date, account_number)
+        VALUES (#{serviceName}, #{totalPrice}, #{billingDate}, #{accountNumber})
     </insert>
 
     <!-- 파티원 일괄 등록 (foreach 배치 삽입) -->
@@ -62,6 +63,7 @@
             s.service_name,
             s.total_price,
             s.billing_date,
+            s.account_number,
             s.regdate,
             pm.member_seq,
             pm.sub_seq,
@@ -80,6 +82,7 @@
             s.service_name,
             s.total_price,
             s.billing_date,
+            s.account_number,
             s.regdate,
             pm.member_seq,
             pm.sub_seq,
@@ -99,6 +102,7 @@
             s.service_name,
             s.total_price,
             s.billing_date,
+            s.account_number,
             s.regdate,
             pm.member_seq,
             pm.sub_seq,
@@ -146,7 +150,8 @@
         UPDATE subscription
         SET service_name = #{serviceName},
             total_price = #{totalPrice},
-            billing_date = #{billingDate}
+            billing_date = #{billingDate},
+            account_number = #{accountNumber}
         WHERE seq = #{seq}
     </update>
 

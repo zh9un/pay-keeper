@@ -17,6 +17,7 @@ public class SubscriptionDO {
     private String serviceName;       // 서비스명 (예: 넷플릭스, 유튜브)
     private Integer totalPrice;       // 월 총 결제 금액
     private Integer billingDate;      // 결제일 (1~31)
+    private String accountNumber;     // 입금 계좌번호 (예: 카카오뱅크 3333-xx-xxxx)
     private Timestamp regdate;        // 등록일시
 
     // 1:N Relationship - 파티원 목록
@@ -69,6 +70,14 @@ public class SubscriptionDO {
 
     public void setBillingDate(Integer billingDate) {
         this.billingDate = billingDate;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
     }
 
     public Timestamp getRegdate() {
@@ -160,6 +169,7 @@ public class SubscriptionDO {
                 ", serviceName='" + serviceName + '\'' +
                 ", totalPrice=" + totalPrice +
                 ", billingDate=" + billingDate +
+                ", accountNumber='" + accountNumber + '\'' +
                 ", regdate=" + regdate +
                 ", membersCount=" + getMemberCount() +
                 '}';

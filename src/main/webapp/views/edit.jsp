@@ -111,6 +111,22 @@
                         </div>
                     </div>
 
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="accountNumber" class="form-label">
+                                입금 계좌번호
+                            </label>
+                            <input type="text" class="form-control" id="accountNumber"
+                                   name="accountNumber" placeholder="예: 카카오뱅크 3333-01-1234567"
+                                   value="${subscription.accountNumber}"
+                                   maxlength="100">
+                            <div class="form-text">
+                                <i class="bi bi-bank"></i>
+                                파티원들에게 안내할 입금 계좌번호를 입력하세요 (선택사항)
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- 파티원 정보 섹션 -->
                     <h5 class="border-bottom pb-2 mb-3 mt-4">
                         <i class="bi bi-people"></i> 파티원 정보
