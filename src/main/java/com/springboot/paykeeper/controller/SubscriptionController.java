@@ -4,6 +4,7 @@ import com.springboot.paykeeper.domain.PartyMemberDO;
 import com.springboot.paykeeper.domain.SubscriptionDO;
 import com.springboot.paykeeper.mapper.SubscriptionMapper;
 import com.springboot.paykeeper.service.SubscriptionService;
+import com.springboot.paykeeper.service.KakaoApiService; // Added
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,6 +28,9 @@ public class SubscriptionController {
 
     @Autowired
     private SubscriptionMapper subscriptionMapper;
+    
+    @Autowired
+    private KakaoApiService kakaoApiService; // Added
 
     // ===========================
     // READ - 목록 조회 및 검색
@@ -300,5 +304,68 @@ public class SubscriptionController {
             model.addAttribute("error", "공유 링크 조회 중 오류가 발생했습니다.");
             return "error";
         }
+    // ===========================
+    // KakaoTalk API Integration
+    // ===========================
+
+    /**
+     * 카카오 인증 콜백 처리
+     * GET /kakao/callback?code={authorization_code}
+     */
+    @GetMapping("/kakao/callback")
+    public String kakaoCallback(@RequestParam("code") String code, Model model) {
+        System.out.println("[Controller] GET /kakao/callback - 인가 코드 수신");
+        
+        String accessToken = kakaoApiService.getAccessToken(code);
+
+        if (accessToken != null) {
+            System.out.println("[Controller] 카카오톡 인증 성공");
+        } else {
+            System.err.println("[Controller] 카카오톡 인증 실패");
+        }
+
+        return "redirect:/list";
+    }
+
+    /**
+     * 카카오톡 메시지 전송 (콕 찌르기)
+     * POST /api/kakao/poke
+     */
+    @PostMapping("/api/kakao/poke")
+    @ResponseBody
+    public Map<String, Object> sendKakaoPokeMessage(@RequestParam("message") String message) {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            boolean success = kakaoApiService.sendTextToMe(message);
+
+            if (success) {
+                response.put("success", true);
+                response.put("message", "카카오톡 메시지 전송 성공 (나에게 보내짐)");
+            } else {
+                response.put("success", false);
+                response.put("message", "카카오톡 메시지 전송 실패. 인증이 필요하거나 API 오류.");
+            }
+
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "메시지 전송 중 서버 오류가 발생했습니다: " + e.getMessage());
+        }
+
+        return response;
+    }
+    
+    /**
+     * 카카오 토큰 상태 확인
+     * GET /api/kakao/status
+     */
+    @GetMapping("/api/kakao/status")
+    @ResponseBody
+    public Map<String, Object> getKakaoTokenStatus() {
+        Map<String, Object> response = new HashMap<>();
+        String token = kakaoApiService.getCurrentAccessToken();
+        
+        response.put("isAuthorized", token != null && !token.isEmpty());
+        return response;
     }
 }

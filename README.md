@@ -135,7 +135,28 @@ Pay Keeper는 Netflix, YouTube Premium 등의 OTT 서비스를 여러 명이 공
 - 메시지에 이름, 금액, 계좌번호 포함
 - "콕 찌르기" 버튼으로 간편 독촉
 
-### 9. Apple 스타일 UI/UX
+### 9. 카카오톡 연동 기능
+- **OAuth 2.0 인증**: 카카오 계정 연동
+- **나에게 보내기**: 미입금 알림 메시지를 카카오톡으로 전송
+- **자동 메시지 생성**: 파티원 이름, 서비스명, 금액, 계좌번호 자동 포함
+- **인증 상태 표시**: 버튼 색상으로 연동 상태 확인 가능
+- **토큰 관리**: Access Token 자동 갱신 및 세션 관리
+- **Fallback 옵션**: 인증 미완료 시 클립보드 복사로 대체
+
+### 10. 카테고리별 필터링
+- **5가지 카테고리**: 영상(OTT), 음악, 쇼핑/생활, 업무/유틸, 기타
+- **자동 분류**: 서비스명 기반 카테고리 자동 할당
+- **실시간 필터링**: 클릭 한 번으로 카테고리별 구독 필터
+- **부드러운 애니메이션**: 페이드 인/아웃 효과
+- **스크롤 가능한 버튼**: 모바일 환경에서도 편리한 카테고리 선택
+
+### 11. 서비스별 브랜드 아이덴티티
+- **자동 로고 표시**: Google Favicon API를 통한 서비스 로고 자동 로드
+- **브랜드 컬러 적용**: 넷플릭스(빨강), 유튜브(빨강), 스포티파이(초록) 등 브랜드 컬러 캘린더 적용
+- **25개 이상 서비스 지원**: OTT, 음악, AI, 쇼핑 등 주요 구독 서비스 로고 지원
+- **Fallback 처리**: 로고 로드 실패 시 기본 아이콘으로 자동 전환
+
+### 12. Apple 스타일 UI/UX
 - **Pretendard 폰트**: 한국어 가독성 최적화
 - **모노크롬 디자인**: Apple 스타일의 깔끔한 색상 팔레트
 - **카드형 레이아웃**: 그림자 효과와 호버 인터랙션
@@ -223,7 +244,8 @@ paykeeper/
 │   │   └── SubscriptionController.java    # MVC Controller
 │   ├── service/
 │   │   ├── SubscriptionService.java       # Service 인터페이스
-│   │   └── SubscriptionServiceImpl.java   # Service 구현체 (1/N 계산)
+│   │   ├── SubscriptionServiceImpl.java   # Service 구현체 (1/N 계산)
+│   │   └── KakaoApiService.java           # 카카오톡 메시지 전송 서비스
 │   ├── mapper/
 │   │   └── SubscriptionMapper.java        # MyBatis Mapper 인터페이스
 │   └── domain/
