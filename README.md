@@ -517,12 +517,30 @@ USE paykeeper_db;
 SHOW TABLES;
 ```
 
-### 3. application.properties 설정
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/paykeeper_db
-spring.datasource.username=root
-spring.datasource.password=YOUR_PASSWORD
+### 3. 보안 설정 파일 생성
+민감한 정보(API 키, DB 비밀번호)는 별도 파일로 관리됩니다.
+
+```bash
+# 템플릿 파일을 복사하여 실제 설정 파일 생성
+cd src/main/resources
+cp application-secret.properties.example application-secret.properties
 ```
+
+`application-secret.properties` 파일을 열어 실제 값으로 변경:
+```properties
+# Database Password
+spring.datasource.password=YOUR_DATABASE_PASSWORD
+
+# Kakao API Configuration
+kakao.rest.api.key=YOUR_KAKAO_REST_API_KEY
+kakao.redirect.uri=http://localhost:8080/kakao/callback
+```
+
+**카카오 API 키 발급 방법:**
+1. [카카오 개발자 콘솔](https://developers.kakao.com/console/app) 접속
+2. 애플리케이션 추가 또는 선택
+3. 앱 키 > REST API 키 복사
+4. 플랫폼 설정 > Web > Redirect URI 등록: `http://localhost:8080/kakao/callback`
 
 ### 4. Maven 빌드 및 실행
 ```bash
