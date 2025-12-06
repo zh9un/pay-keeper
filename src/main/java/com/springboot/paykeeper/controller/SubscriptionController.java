@@ -304,6 +304,7 @@ public class SubscriptionController {
             model.addAttribute("error", "공유 링크 조회 중 오류가 발생했습니다.");
             return "error";
         }
+    }
     // ===========================
     // KakaoTalk API Integration
     // ===========================

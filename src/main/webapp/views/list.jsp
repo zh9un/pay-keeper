@@ -47,19 +47,26 @@
             </div>
             <div id="userGuide" class="collapse">
                 <div class="card-body small">
-                    <p class="text-secondary">Pay Keeper를 활용하여 OTT 구독 공유 및 정산을 쉽게 관리하세요.</p>
-                     <div class="row">
+                    <p class="text-secondary mb-3">Pay Keeper를 활용하여 OTT 구독 공유 및 정산을 스마트하게 관리하세요.</p>
+                     <div class="row g-3">
                         <div class="col-md-6">
-                            <h6 class="fw-bold mt-2">구독 등록</h6>
-                            <p>우측 상단 '새 구독 등록' 버튼을 눌러 서비스명, 금액, 파티원(콤마로 구분)을 입력하세요.</p>
-                            <h6 class="fw-bold mt-3">입금 관리</h6>
-                            <p>파티원 목록에서 아이콘 버튼을 눌러 '미입금' ↔ '완료' 상태를 변경할 수 있습니다.</p>
+                            <h6 class="fw-bold text-primary"><i class="bi bi-pencil-square me-1"></i>구독 관리</h6>
+                            <ul class="list-unstyled text-secondary mb-0">
+                                <li>• <b>등록:</b> 우측 상단 '새 구독 등록' 버튼으로 서비스와 파티원을 추가하세요.</li>
+                                <li>• <b>수정/삭제:</b> 각 구독 카드의 우측 상단 아이콘을 이용하세요.</li>
+                                <li>• <b>공유:</b> 공유 아이콘 <i class="bi bi-share"></i>을 눌러 파티원에게 링크를 보내세요.</li>
+                            </ul>
                         </div>
                         <div class="col-md-6">
-                             <h6 class="fw-bold mt-2">수정 및 삭제</h6>
-                            <p>각 구독 카드의 우측 상단 아이콘을 통해 정보를 수정하거나 삭제할 수 있습니다.</p>
-                            <h6 class="fw-bold mt-3">공유 링크</h6>
-                            <p>공유 아이콘을 눌러 링크를 복사하고, 파티원에게 전달하여 입금 현황을 공유하세요 (읽기 전용).</p>
+                            <h6 class="fw-bold text-success"><i class="bi bi-cash-coin me-1"></i>정산 및 알림</h6>
+                            <ul class="list-unstyled text-secondary mb-0">
+                                <li>• <b>입금 확인:</b> 파티원 목록의 아이콘을 눌러 '미입금' ↔ '완료' 상태를 변경하세요.</li>
+                                <li>• <b>콕 찌르기:</b> 미입금 파티원에게 <i class="bi bi-hand-index-thumb-fill text-warning"></i> 버튼으로 카카오톡 알림을 보내세요.</li>
+                                <li>• <b>현황판:</b> 좌측 대시보드에서 이번 달 총 지출과 다음 결제일을 확인하세요.</li>
+                            </ul>
+                        </div>
+                        <div class="col-12 mt-2 border-top pt-2">
+                             <p class="mb-0 text-muted"><i class="bi bi-info-circle me-1"></i><b>Tip:</b> 카테고리 버튼으로 원하는 구독만 모아보거나, 달력에서 전체 결제 일정을 한눈에 파악할 수 있습니다.</p>
                         </div>
                     </div>
                 </div>
@@ -68,45 +75,95 @@
 
         <div class="row mb-5 align-items-stretch">
             <div class="col-lg-5 mb-4 mb-lg-0 d-flex flex-column">
-                <div class="mb-auto"> <h5 class="mb-3 fw-bold"><i class="bi bi-bar-chart-fill me-2"></i>구독 현황</h5>
-                    <div class="row g-3">
-                        <div class="col-6">
-                            <div class="card stat-card h-100">
-                                <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                                    <div class="stat-icon icon-primary mb-2" style="width:50px; height:50px; font-size:1.5rem;"><i class="bi bi-tv-fill"></i></div>
-                                    <div class="stat-title small">총 구독 수</div>
-                                    <div class="stat-value fs-3">${stats.countSubscriptions}</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                                                    <div class="card stat-card h-100">
-                                                        <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                                                            <div class="stat-icon icon-success mb-2" style="width:50px; height:50px; font-size:1.5rem;"><i class="bi bi-currency-dollar"></i></div>
-                                                            <div class="stat-title small">총 월 결제액</div>
-                                                            <div class="stat-value fs-3">${String.format("%,d", stats.sumTotalPrice)}</div>
-                                                        </div>
-                                                    </div>                        </div>
-                        <div class="col-6">
-                            <div class="card stat-card h-100">
-                                <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                                    <div class="stat-icon icon-warning mb-2" style="width:50px; height:50px; font-size:1.5rem;"><i class="bi bi-people-fill"></i></div>
-                                    <div class="stat-title small">전체 파티원</div>
-                                    <div class="stat-value fs-3">${stats.countAllPartyMembers}</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="card stat-card h-100">
-                                <div class="card-body d-flex flex-column justify-content-center align-items-center">
-                                    <div class="stat-icon icon-info mb-2" style="width:50px; height:50px; font-size:1.5rem;"><i class="bi bi-check-circle-fill"></i></div>
-                                    <div class="stat-title small">입금 완료율</div>
-                                    <div class="stat-value fs-3">${String.format("%.0f", stats.paidPercentage)}%</div>
-                                </div>
-                            </div>
-                        </div>
+                <div class="mb-auto"> 
+    <h5 class="mb-3 fw-bold"><i class="bi bi-bar-chart-fill me-2"></i>이번 달 리포트</h5>
+    <div class="row g-3">
+        <!-- 1. Total Cost (Highlighted) -->
+        <div class="col-12">
+            <div class="card border-0 shadow-sm text-white" style="background: linear-gradient(135deg, #007aff, #005ecb);">
+                <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="small text-white-50 mb-1">이번 달 총 결제 예정액</div>
+                        <div class="fs-2 fw-bold text-white">${String.format("%,d", stats.sumTotalPrice)}원</div>
+                        <div class="small text-white-50 mt-1">총 <span class="text-white fw-bold">${stats.countSubscriptions}</span>개의 구독을 관리 중입니다.</div>
+                    </div>
+                    <div class="bg-white bg-opacity-25 rounded-circle d-flex align-items-center justify-content-center" style="width: 56px; height: 56px;">
+                        <i class="bi bi-wallet2 fs-3"></i>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- 2. Next Payment (Dynamic) -->
+        <div class="col-6">
+            <div class="card border-0 shadow-sm h-100" style="background-color: #fff;">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center mb-2 text-secondary">
+                        <i class="bi bi-clock-history me-1"></i>
+                        <span class="small fw-bold">곧 결제 예정</span>
+                    </div>
+                    <div id="next-payment-info">
+                        <h6 class="fw-bold mb-1 text-truncate" id="next-service-name">-</h6>
+                        <div class="text-danger fw-bold small" id="next-service-dday">일정 없음</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Settlement Status (Progress) -->
+        <div class="col-6">
+            <div class="card border-0 shadow-sm h-100" style="background-color: #fff;">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center mb-2 text-secondary">
+                        <i class="bi bi-check-circle me-1"></i>
+                        <span class="small fw-bold">정산 현황</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-end mb-2">
+                        <span class="fs-5 fw-bold">${String.format("%.0f", stats.paidPercentage)}%</span>
+                        <span class="small text-muted">${stats.countAllPartyMembers}명 중</span>
+                    </div>
+                    <div class="progress" style="height: 6px; background-color: #f0f0f0;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: ${stats.paidPercentage}%" aria-valuenow="${stats.paidPercentage}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Average Cost -->
+        <div class="col-6">
+            <div class="card border-0 shadow-sm h-100" style="background-color: #fff;">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center mb-2 text-secondary">
+                        <i class="bi bi-calculator me-1"></i>
+                        <span class="small fw-bold">평균 구독료</span>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center h-50">
+                        <div class="fs-5 fw-bold text-dark">
+                             ${stats.countSubscriptions > 0 ? String.format("%,.0f", stats.sumTotalPrice / stats.countSubscriptions) : 0}원
+                        </div>
+                        <div class="small text-secondary">서비스 1개당</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. Top Category (Dynamic) -->
+        <div class="col-6">
+            <div class="card border-0 shadow-sm h-100" style="background-color: #fff;">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center mb-2 text-secondary">
+                        <i class="bi bi-pie-chart me-1"></i>
+                        <span class="small fw-bold">주 이용 분야</span>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center h-50">
+                        <div class="fs-5 fw-bold text-dark" id="top-category-name">-</div>
+                        <div class="small text-secondary" id="top-category-count">데이터 분석 중</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
                 <div>
                     <h5 class="mb-3 fw-bold mt-4"><i class="bi bi-search me-2"></i>구독 검색</h5>
@@ -169,7 +226,7 @@
                     <c:forEach items="${subscriptions}" var="sub">
                         <div class="col-md-6 mb-4 subscription-item">
                             <div class="card h-100">
-                                <div class="card-header d-flex justify-content-between align-items-center">
+                                <div class="card-header d-flex justify-content-between align-items-center" data-billing-date="${sub.billingDate}">
                                     <span class="fw-bold d-flex align-items-center">
                                         <span class="service-logo-wrapper me-2" data-service="${sub.serviceName}">
                                             <i class="bi bi-tv text-secondary"></i>
@@ -188,7 +245,7 @@
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between text-secondary mb-3">
                                         <span>총 금액: <strong class="text-dark">${String.format("%,d", sub.totalPrice)}원</strong></span>
-                                        <span>결제일: 매월 ${sub.billingDate}일</span>
+                                        <span class="payment-date-text">결제일: 매월 ${sub.billingDate}일</span>
                                     </div>
 
                                     <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-light rounded-3">
@@ -510,12 +567,42 @@
         document.addEventListener('DOMContentLoaded', function() {
             checkKakaoTokenStatus();
             
-            // Initialize Categories for Items
+            // Initialize Categories for Items & Calculate Top Category
+            const categoryCounts = { video: 0, music: 0, shopping: 0, work: 0, other: 0 };
+            const categoryNames = { video: '영상 (OTT)', music: '음악', shopping: '쇼핑/생활', work: '업무/유틸', other: '기타' };
+            
             document.querySelectorAll('.subscription-item').forEach(item => {
                 const serviceNameWrapper = item.querySelector('.service-logo-wrapper');
                 const serviceName = serviceNameWrapper ? serviceNameWrapper.dataset.service : '';
-                item.dataset.category = getCategory(serviceName);
+                const cat = getCategory(serviceName);
+                item.dataset.category = cat;
+                
+                if (categoryCounts[cat] !== undefined) {
+                    categoryCounts[cat]++;
+                } else {
+                    categoryCounts['other']++;
+                }
             });
+
+            // Determine Top Category
+            let maxCat = 'other';
+            let maxCount = -1;
+            for (const [key, value] of Object.entries(categoryCounts)) {
+                if (value > maxCount) {
+                    maxCount = value;
+                    maxCat = key;
+                }
+            }
+            
+            const topCatNameEl = document.getElementById('top-category-name');
+            const topCatCountEl = document.getElementById('top-category-count');
+            if (topCatNameEl && maxCount > 0) {
+                topCatNameEl.textContent = categoryNames[maxCat] || '기타';
+                topCatCountEl.textContent = maxCount + '개의 구독 중';
+            } else if (topCatNameEl) {
+                topCatNameEl.textContent = '-';
+                topCatCountEl.textContent = '구독 없음';
+            }
 
             // Load Service Logos
             document.querySelectorAll('.service-logo-wrapper').forEach(wrapper => {
@@ -551,6 +638,129 @@
                 }
             });
 
+            // Add D-Day Badges
+            document.querySelectorAll('.card-header[data-billing-date]').forEach(header => {
+                console.log('[D-Day Debug] Processing header element:', header); // header 요소 자체 로그
+                const billingDateStr = header.getAttribute('data-billing-date'); // .dataset 대신 getAttribute 사용
+                const billingDate = parseInt(billingDateStr);
+                const serviceName = header.querySelector('.fw-bold').innerText.split('\n')[0].trim(); // 서비스명 추출
+
+                console.log(`[D-Day Debug] Processing service: ${serviceName}, Raw Billing Date Str: '${billingDateStr}', Parsed Billing Date: ${billingDate}`);
+                
+                if (isNaN(billingDate) || billingDate < 1 || billingDate > 31) {
+                    console.warn(`[D-Day Debug] Invalid Billing Date for ${serviceName}: '${billingDateStr}'. Skipping D-Day calculation.`);
+                    return; // 유효하지 않으면 건너뜀
+                }
+
+                const today = new Date();
+                today.setHours(0, 0, 0, 0); // 오늘 날짜의 시간 정보를 초기화
+
+                let paymentDate = new Date(today.getFullYear(), today.getMonth(), billingDate);
+                paymentDate.setHours(0, 0, 0, 0); // 결제 예정일의 시간 정보를 초기화
+
+                // 결제 예정일이 오늘보다 과거이면 다음 달로 설정
+                if (paymentDate < today) {
+                    paymentDate.setMonth(paymentDate.getMonth() + 1);
+                    console.log(`[D-Day Debug] Payment date ${billingDate} is in the past. Adjusted to next month: ${paymentDate.toLocaleDateString()}`);
+                }
+                
+                // 오늘 날짜와 결제 예정일의 차이 계산 (미래 날짜에서 오늘 날짜를 뺌)
+                const diffTime = paymentDate.getTime() - today.getTime();
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // 올림하여 남은 일수 계산
+                
+                console.log(`[D-Day Debug] Today: ${today.toLocaleDateString()}, Payment Date: ${paymentDate.toLocaleDateString()}, Diff Days: ${diffDays}`);
+
+                let ddayText = '';
+                let badgeClass = '';
+
+                if (diffDays === 0) {
+                    ddayText = 'D-Day';
+                    badgeClass = 'bg-danger'; // 오늘 결제
+                } else if (diffDays > 0 && diffDays <= 7) {
+                    ddayText = 'D-' + diffDays;
+                    badgeClass = 'bg-warning'; // 7일 이내 (custom css handles color)
+                } else if (diffDays > 7) {
+                    ddayText = 'D-' + diffDays;
+                    badgeClass = 'bg-secondary'; // 7일 이상 남음
+                } else {
+                    // Should not happen, but safe fallback
+                    ddayText = ''; 
+                }
+
+                if (ddayText) {
+                    const ddayBadge = document.createElement('span');
+                    ddayBadge.className = 'badge rounded-pill ms-2 ' + badgeClass;
+                    ddayBadge.textContent = ddayText;
+                    
+                    // 결제일 옆에 배지 추가
+                    const billingDateSpan = header.nextElementSibling.querySelector('.payment-date-text');
+                    
+                    if (billingDateSpan) {
+                        billingDateSpan.appendChild(ddayBadge);
+                        console.log(`[D-Day Debug] Badge appended to billing date span for ${serviceName}.`);
+                    } else {
+                        header.querySelector('.fw-bold').appendChild(ddayBadge); // fallback
+                        console.warn(`[D-Day Debug] Could not find billing date span for ${serviceName}. Appended to service name (fallback).`);
+                    }
+                } else {
+                    console.log(`[D-Day Debug] No D-Day badge to display for ${serviceName}.`);
+                }
+            });
+
+            // Find Next Payment Logic
+            let minDiff = 999;
+            let nextService = null;
+            
+            document.querySelectorAll('.card-header[data-billing-date]').forEach(header => {
+                 const billingDateStr = header.getAttribute('data-billing-date');
+                 const billingDate = parseInt(billingDateStr);
+                 const serviceName = header.querySelector('.fw-bold').innerText.split('\n')[0].trim();
+                 
+                 if (isNaN(billingDate)) return;
+
+                 const today = new Date();
+                 today.setHours(0, 0, 0, 0);
+                 
+                 let paymentDate = new Date(today.getFullYear(), today.getMonth(), billingDate);
+                 paymentDate.setHours(0, 0, 0, 0);
+                 
+                 if (paymentDate < today) {
+                     paymentDate.setMonth(paymentDate.getMonth() + 1);
+                 }
+                 
+                 const diffTime = paymentDate.getTime() - today.getTime();
+                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                 
+                 if (diffDays >= 0 && diffDays < minDiff) {
+                     minDiff = diffDays;
+                     nextService = { name: serviceName, dday: diffDays };
+                 }
+            });
+
+            if (nextService) {
+                const nameEl = document.getElementById('next-service-name');
+                const ddayEl = document.getElementById('next-service-dday');
+                if (nameEl && ddayEl) {
+                    nameEl.textContent = nextService.name;
+                    nameEl.title = nextService.name; // Tooltip for truncation
+                    
+                    if (nextService.dday === 0) {
+                        ddayEl.textContent = '오늘 결제일!';
+                        ddayEl.className = 'text-danger fw-bold small';
+                    } else {
+                        ddayEl.textContent = 'D-' + nextService.dday;
+                        ddayEl.className = 'text-primary fw-bold small';
+                    }
+                }
+            } else {
+                 const nameEl = document.getElementById('next-service-name');
+                 const ddayEl = document.getElementById('next-service-dday');
+                 if (nameEl) nameEl.textContent = '모든 결제 완료';
+                 if (ddayEl) {
+                     ddayEl.textContent = '다음 달을 기다리세요';
+                     ddayEl.className = 'text-success fw-bold small';
+                 }
+            }
 
             // Calendar
             const calendarEl = document.getElementById('calendar');

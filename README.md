@@ -21,7 +21,7 @@ Pay Keeper는 Netflix, YouTube Premium 등의 OTT 서비스를 여러 명이 공
 
 ### Backend
 - **Framework**: Spring Boot 3.3.5
-- **Language**: Java 21
+- **Language**: Java 17
 - **ORM**: MyBatis 3.0.3 (XML Mapper 방식)
 - **Build Tool**: Maven
 - **Database**: MySQL 8.x
@@ -88,11 +88,19 @@ Pay Keeper는 Netflix, YouTube Premium 등의 OTT 서비스를 여러 명이 공
 - **자동 계산**: 데이터베이스 집계 함수 활용 (COUNT, SUM, COALESCE)
 - **DashboardStatsDO**: 통계 전용 도메인 객체
 
-### 2. 구독 관리
-- 신규 OTT 구독 서비스 등록
-- 서비스명, 총 금액, 결제일, 계좌번호 입력
-- 파티원 정보 일괄 등록 (콤마 구분)
-- 구독 정보 수정 및 삭제 (CASCADE)
+### 2. 구독 관리 (CRUD)
+- **생성(Create)**: 신규 OTT 구독 서비스 등록
+  - 서비스명, 총 금액, 결제일, 계좌번호 입력
+  - 파티원 정보 일괄 등록 (콤마 구분)
+  - 1/N 정산 자동 계산
+- **조회(Read)**: 전체 구독 목록 조회, 상세 정보 확인
+- **수정(Update)**: 구독 정보 및 파티원 수정
+  - 서비스명, 금액, 결제일, 파티원 수정 가능
+  - 파티원 변경 시 기존 파티원 전체 삭제 후 재등록
+  - 입금 상태 초기화 ('N'으로 리셋)
+  - 1/N 정산 자동 재계산
+- **삭제(Delete)**: 구독 삭제 (CASCADE로 파티원 자동 삭제)
+  - 삭제 확인 모달로 실수 방지
 
 ### 3. 자동 정산 계산
 - 총 구독료를 파티원 수로 자동 분할
@@ -157,14 +165,23 @@ Pay Keeper는 Netflix, YouTube Premium 등의 OTT 서비스를 여러 명이 공
 - **Fallback 처리**: 로고 로드 실패 시 기본 아이콘으로 자동 전환
 
 ### 12. Apple 스타일 UI/UX
-- **Pretendard 폰트**: 한국어 가독성 최적화
+- **Pretendard 폰트**: 한국어 가독성 최적화 웹폰트
 - **모노크롬 디자인**: Apple 스타일의 깔끔한 색상 팔레트
 - **카드형 레이아웃**: 그림자 효과와 호버 인터랙션
-- **토스트 알림**: 작업 성공/실패 시각적 피드백
-- **로딩 스피너**: 비동기 작업 진행 상태 표시
-- **확인 모달**: 삭제 등 중요 작업 전 확인 다이얼로그
+- **토스트 알림 시스템** (`ui-enhancements.js`)
+  - 성공/에러 메시지를 우측 상단에 표시
+  - 자동 페이드 인/아웃 애니메이션
+  - `Toast.success()`, `Toast.error()` 함수 제공
+- **로딩 스피너** (`ui-enhancements.js`)
+  - AJAX 요청 중 전체 화면 로딩 표시
+  - `Loading.show()`, `Loading.hide()` 함수 제공
+- **확인 모달** (`ui-enhancements.js`)
+  - 삭제 등 중요 작업 전 확인 다이얼로그
+  - `showConfirmModal()` 함수로 커스텀 모달 생성
 - **반응형 디자인**: PC, 태블릿, 모바일 대응
-- **접을 수 있는 사용자 가이드**: 초보자를 위한 상세 설명
+- **접을 수 있는 사용자 가이드**: 초보자를 위한 5단계 상세 설명
+  - 구독 등록, 입금 관리, 수정, 삭제, 검색 기능 안내
+  - Collapse 애니메이션으로 공간 절약
 
 ---
 
@@ -487,7 +504,7 @@ calendar.render();
 ## 설치 및 실행
 
 ### 사전 요구사항
-- JDK 21 이상
+- JDK 17 이상
 - Maven 3.6 이상
 - MySQL 8.x
 - IDE: Spring Tool Suite 4 (또는 IntelliJ IDEA)
