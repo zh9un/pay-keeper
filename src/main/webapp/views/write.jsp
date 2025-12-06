@@ -141,7 +141,6 @@
                                    name="accountNumber" placeholder="예: 카카오뱅크 3333-01-1234567"
                                    maxlength="100">
                             <div class="form-text">
-                                <i class="bi bi-bank"></i>
                                 파티원들에게 안내할 입금 계좌번호를 입력하세요 (선택사항)
                             </div>
                         </div>
@@ -160,7 +159,6 @@
                                   rows="3" placeholder="철수,영희,민수,본인"
                                   required></textarea>
                         <div class="form-text">
-                            <i class="bi bi-lightbulb"></i>
                             파티원 이름을 <strong>콤마(,)</strong>로 구분하여 입력하세요.
                             본인 포함 여부는 자유입니다.
                         </div>

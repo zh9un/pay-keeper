@@ -249,17 +249,27 @@
                                     </div>
 
                                     <div class="d-flex justify-content-between align-items-center mb-4 p-3 bg-light rounded-3">
-                                        <div class="text-nowrap">
+                                        <div class="d-flex align-items-center" style="gap: 10px;">
                                             <c:if test="${not empty sub.accountNumber}">
-                                                 <strong class="small"><i class="bi bi-credit-card me-1"></i>입금 계좌:</strong>
-                                                 <span class="small text-secondary me-2">${sub.accountNumber}</span>
-                                                 <button class="btn btn-icon btn-sm" title="계좌번호 복사" onclick="copyToClipboard('${sub.accountNumber}', '계좌번호가')"><i class="bi bi-clipboard"></i></button>
+                                                <div class="icon-circle bg-white shadow-sm text-secondary">
+                                                    <i class="bi bi-credit-card"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="small text-muted" style="font-size: 0.75rem;">입금 계좌</div>
+                                                    <div class="fw-bold small" onclick="copyToClipboard('${sub.accountNumber}', '계좌번호가')" style="cursor:pointer;" title="클릭하여 복사">
+                                                        ${sub.accountNumber} <i class="bi bi-files ms-1 text-secondary"></i>
+                                                    </div>
+                                                </div>
+                                            </c:if>
+                                            <c:if test="${empty sub.accountNumber}">
+                                                <span class="small text-secondary">계좌 정보 없음</span>
                                             </c:if>
                                         </div>
-                                         <div class="text-nowrap">
-                                            <strong class="small"><i class="bi bi-link-45deg me-1"></i>공유 링크:</strong>
-                                            <button class="btn btn-icon btn-sm" title="공유 링크 복사" onclick="copyShareLink('${sub.shareUuid}')"><i class="bi bi-share"></i></button>
-                                         </div>
+
+                                        <button class="btn btn-sm btn-light border d-flex align-items-center text-secondary" onclick="copyShareLink('${sub.shareUuid}')">
+                                            <i class="bi bi-link-45deg fs-6 me-1"></i>
+                                            <span class="small fw-bold">공유 링크</span>
+                                        </button>
                                     </div>
 
                                     <h6 class="fw-bold"><i class="bi bi-people me-2"></i>파티원 목록 (${sub.memberCount}명)</h6>
@@ -307,9 +317,10 @@
                                                                     </c:otherwise>
                                                                 </c:choose>
                                                                 <c:if test="${member.isPaid == 'N'}">
-                                                                    <button class="btn btn-icon btn-sm" title="콕 찌르기"
+                                                                    <button class="btn btn-sm btn-kakao ms-1" 
+                                                                            title="카카오톡으로 알림 보내기"
                                                                             onclick="pokeUnpaidMember('${member.memberName}', '${sub.serviceName}', ${member.perPrice}, '${sub.accountNumber}')">
-                                                                            <i class="bi bi-hand-index-thumb-fill"></i>
+                                                                        <i class="bi bi-chat-fill me-1"></i> 콕 찌르기
                                                                     </button>
                                                                 </c:if>
                                                             </td>
