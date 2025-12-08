@@ -34,7 +34,7 @@ Pay Keeper는 Netflix, YouTube Premium 등의 OTT 서비스를 여러 명이 공
 - **Calendar Library**: FullCalendar 6.1.8
 - **Font**: Pretendard (Korean Web Font)
 - **AJAX**: Fetch API
-- **Clipboard API**: 공유 링크 복사
+- **Clipboard API**: 계좌번호 및 텍스트 복사
 
 ### Architecture
 - **Design Pattern**: MVC (Model-View-Controller)
@@ -129,21 +129,14 @@ Pay Keeper는 Netflix, YouTube Premium 등의 OTT 서비스를 여러 명이 공
 - 서버 사이드 렌더링 (JSTL → JavaScript 데이터 변환)
 - 반응형 캘린더 뷰 (모바일 대응)
 
-### 7. 게스트 공유 링크
-- UUID 기반 고유 공유 링크 자동 생성
-- 로그인 없이 구독 현황 조회 가능
-- 읽기 전용 뷰 (수정/삭제 불가)
-- Clipboard API를 통한 링크 복사
-- 총무는 관리, 파티원은 간편 조회 컨셉
-
-### 8. 계좌번호 관리 및 독촉 기능
+### 7. 계좌번호 관리 및 독촉 기능
 - 구독별 입금 계좌번호 등록
 - 계좌번호 원클릭 복사
 - 미입금 파티원 독촉 메시지 자동 생성
 - 메시지에 이름, 금액, 계좌번호 포함
 - "콕 찌르기" 버튼으로 간편 독촉
 
-### 9. 카카오톡 연동 기능
+### 8. 카카오톡 연동 기능
 - **OAuth 2.0 인증**: 카카오 계정 연동
 - **나에게 보내기**: 미입금 알림 메시지를 카카오톡으로 전송
 - **자동 메시지 생성**: 파티원 이름, 서비스명, 금액, 계좌번호 자동 포함
@@ -151,20 +144,20 @@ Pay Keeper는 Netflix, YouTube Premium 등의 OTT 서비스를 여러 명이 공
 - **토큰 관리**: Access Token 자동 갱신 및 세션 관리
 - **Fallback 옵션**: 인증 미완료 시 클립보드 복사로 대체
 
-### 10. 카테고리별 필터링
+### 9. 카테고리별 필터링
 - **5가지 카테고리**: 영상(OTT), 음악, 쇼핑/생활, 업무/유틸, 기타
 - **자동 분류**: 서비스명 기반 카테고리 자동 할당
 - **실시간 필터링**: 클릭 한 번으로 카테고리별 구독 필터
 - **부드러운 애니메이션**: 페이드 인/아웃 효과
 - **스크롤 가능한 버튼**: 모바일 환경에서도 편리한 카테고리 선택
 
-### 11. 서비스별 브랜드 아이덴티티
+### 10. 서비스별 브랜드 아이덴티티
 - **자동 로고 표시**: Google Favicon API를 통한 서비스 로고 자동 로드
 - **브랜드 컬러 적용**: 넷플릭스(빨강), 유튜브(빨강), 스포티파이(초록) 등 브랜드 컬러 캘린더 적용
 - **25개 이상 서비스 지원**: OTT, 음악, AI, 쇼핑 등 주요 구독 서비스 로고 지원
 - **Fallback 처리**: 로고 로드 실패 시 기본 아이콘으로 자동 전환
 
-### 12. Apple 스타일 UI/UX
+### 11. Apple 스타일 UI/UX
 - **Pretendard 폰트**: 한국어 가독성 최적화 웹폰트
 - **모노크롬 디자인**: Apple 스타일의 깔끔한 색상 팔레트
 - **카드형 레이아웃**: 그림자 효과와 호버 인터랙션
@@ -198,7 +191,6 @@ Pay Keeper는 Netflix, YouTube Premium 등의 OTT 서비스를 여러 명이 공
 │ total_price (INT)            │
 │ billing_date (INT)           │
 │ account_number (VARCHAR 100) │
-│ share_uuid (VARCHAR 36)      │
 │ regdate (TIMESTAMP)          │
 └──────────┬──────────────────┘
            │ 1:N
@@ -224,7 +216,6 @@ Pay Keeper는 Netflix, YouTube Premium 등의 OTT 서비스를 여러 명이 공
 | total_price | INT | NOT NULL, CHECK > 0 | 총 결제 금액 |
 | billing_date | INT | NOT NULL, CHECK 1-31 | 매월 결제일 |
 | account_number | VARCHAR(100) | NULL | 입금 계좌번호 |
-| share_uuid | VARCHAR(36) | UNIQUE | 공유 링크용 UUID |
 | regdate | TIMESTAMP | DEFAULT NOW() | 등록 일시 |
 
 #### party_member (파티원 정보)
@@ -272,16 +263,14 @@ paykeeper/
 ├── src/main/resources/
 │   ├── application.properties             # Spring Boot 설정
 │   ├── schema.sql                         # 데이터베이스 스키마
-│   ├── migration.sql                      # DB 마이그레이션 1 (계좌번호)
-│   ├── migration2.sql                     # DB 마이그레이션 2 (공유 링크)
+│   ├── migration.sql                      # DB 마이그레이션 (계좌번호)
 │   └── mapper/
 │       └── SubscriptionMapper.xml         # MyBatis SQL 매핑
 ├── src/main/webapp/
 │   ├── views/
 │   │   ├── list.jsp                       # 목록/검색/캘린더 화면
 │   │   ├── write.jsp                      # 등록 폼 화면
-│   │   ├── edit.jsp                       # 수정 폼 화면
-│   │   └── guest_view.jsp                 # 게스트 공유 뷰 (읽기 전용)
+│   │   └── edit.jsp                       # 수정 폼 화면
 │   ├── css/
 │   │   └── custom-style.css               # Apple 스타일 커스텀 CSS
 │   └── js/
@@ -526,9 +515,6 @@ source /path/to/pay-keeper/src/main/resources/schema.sql
 # 마이그레이션 실행 (계좌번호 추가)
 source /path/to/pay-keeper/src/main/resources/migration.sql
 
-# 마이그레이션 2 실행 (공유 링크 추가)
-source /path/to/pay-keeper/src/main/resources/migration2.sql
-
 # 데이터베이스 확인
 USE paykeeper_db;
 SHOW TABLES;
@@ -595,7 +581,6 @@ http://localhost:8080
 | POST | `/togglePaid` | 입금 상태 토글 (AJAX) | JSON |
 | POST | `/delete` | 구독 삭제 | redirect:/list |
 | GET | `/detail?seq={id}` | 구독 상세 조회 | detail.jsp |
-| GET | `/share/{uuid}` | 게스트 공유 링크 (읽기 전용) | guest_view.jsp |
 
 ### 검색 파라미터
 - `searchType`: "service" (서비스명) 또는 "member" (파티원 이름)
