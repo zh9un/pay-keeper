@@ -265,11 +265,6 @@
                                                 <span class="small text-secondary">계좌 정보 없음</span>
                                             </c:if>
                                         </div>
-
-                                        <button class="btn btn-sm btn-light border d-flex align-items-center text-secondary" onclick="copyShareLink('${sub.shareUuid}')">
-                                            <i class="bi bi-link-45deg fs-6 me-1"></i>
-                                            <span class="small fw-bold">공유 링크</span>
-                                        </button>
                                     </div>
 
                                     <h6 class="fw-bold"><i class="bi bi-people me-2"></i>파티원 목록 (${sub.memberCount}명)</h6>
@@ -294,35 +289,24 @@
                                                             <td>${member.memberName}</td>
                                                             <td>${String.format("%,d", member.perPrice)}원</td>
                                                             <td>
-                                                                <c:choose>
-                                                                    <c:when test="${member.isPaid == 'Y'}">
-                                                                        <span class="badge bg-success">완료</span>
-                                                                    </c:when>
-                                                                    <c:otherwise>
-                                                                        <span class="badge bg-danger">미입금</span>
-                                                                    </c:otherwise>
-                                                                </c:choose>
+                                                                <span id="badge-${member.memberSeq}" class="badge ${member.isPaid == 'Y' ? 'bg-success' : 'bg-danger'}">
+                                                                    ${member.isPaid == 'Y' ? '완료' : '미입금'}
+                                                                </span>
                                                             </td>
                                                             <td class="text-end">
-                                                                <c:choose>
-                                                                    <c:when test="${member.isPaid == 'Y'}">
-                                                                        <button class="btn btn-icon btn-sm text-success" title="미입금으로 변경" onclick="togglePaidStatus(${member.memberSeq}, '${member.isPaid}')">
-                                                                            <i class="bi bi-check-circle-fill"></i>
-                                                                        </button>
-                                                                    </c:when>
-                                                                    <c:otherwise>
-                                                                        <button class="btn btn-icon btn-sm text-danger" title="입금 완료로 변경" onclick="togglePaidStatus(${member.memberSeq}, '${member.isPaid}')">
-                                                                            <i class="bi bi-x-circle-fill"></i>
-                                                                        </button>
-                                                                    </c:otherwise>
-                                                                </c:choose>
-                                                                <c:if test="${member.isPaid == 'N'}">
+                                                                <button class="btn btn-icon btn-sm ${member.isPaid == 'Y' ? 'text-success' : 'text-danger'}" 
+                                                                        title="${member.isPaid == 'Y' ? '미입금으로 변경' : '입금 완료로 변경'}" 
+                                                                        onclick="togglePaidStatus(this, ${member.memberSeq}, '${member.isPaid}')">
+                                                                    <i class="bi ${member.isPaid == 'Y' ? 'bi-check-circle-fill' : 'bi-x-circle-fill'}"></i>
+                                                                </button>
+                                                                
+                                                                <span id="poke-container-${member.memberSeq}" style="${member.isPaid == 'Y' ? 'display:none;' : ''}">
                                                                     <button class="btn btn-sm btn-kakao ms-1" 
                                                                             title="카카오톡으로 알림 보내기"
                                                                             onclick="pokeUnpaidMember('${member.memberName}', '${sub.serviceName}', ${member.perPrice}, '${sub.accountNumber}')">
                                                                         <i class="bi bi-chat-fill me-1"></i> 콕 찌르기
                                                                     </button>
-                                                                </c:if>
+                                                                </span>
                                                             </td>
                                                         </tr>
                                                     </c:forEach>
@@ -348,8 +332,10 @@
 
     <script>
         // 전역 스코프 함수들 (DOMContentLoaded 외부에 위치)
-        function togglePaidStatus(memberSeq, currentStatus) {
-            Loading.show();
+        function togglePaidStatus(btnElement, memberSeq, currentStatus) {
+            // Optimistic UI: 서버 응답 전에 로딩 표시 대신 버튼을 비활성화
+            btnElement.disabled = true;
+            
             fetch('/togglePaid', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -357,17 +343,46 @@
             })
             .then(res => res.json())
             .then(data => {
-                Loading.hide();
+                btnElement.disabled = false;
                 if (data.success) {
+                    const newStatus = data.newStatus;
+                    const isPaid = newStatus === 'Y';
+                    
+                    // 1. Badge Update
+                    const badge = document.getElementById('badge-' + memberSeq);
+                    if (badge) {
+                        badge.className = isPaid ? 'badge bg-success' : 'badge bg-danger';
+                        badge.textContent = isPaid ? '완료' : '미입금';
+                    }
+
+                    // 2. Button Update (Icon & Color)
+                    btnElement.className = 'btn btn-icon btn-sm ' + (isPaid ? 'text-success' : 'text-danger');
+                    btnElement.title = isPaid ? '미입금으로 변경' : '입금 완료로 변경';
+                    
+                    const icon = btnElement.querySelector('i');
+                    if (icon) {
+                        icon.className = 'bi ' + (isPaid ? 'bi-check-circle-fill' : 'bi-x-circle-fill');
+                    }
+
+                    // 3. Update Onclick for next interaction
+                    // 주의: setAttribute로 설정해야 다음 클릭 시 새 값이 반영됨
+                    btnElement.setAttribute('onclick', "togglePaidStatus(this, " + memberSeq + ", '" + newStatus + "')");
+
+                    // 4. Poke Button Visibility
+                    const pokeContainer = document.getElementById('poke-container-' + memberSeq);
+                    if (pokeContainer) {
+                        pokeContainer.style.display = isPaid ? 'none' : 'inline-block';
+                    }
+
                     Toast.success('입금 상태가 변경되었습니다.');
-                    setTimeout(() => location.reload(), 800);
                 } else {
                     Toast.error(data.message || '상태 변경에 실패했습니다.');
                 }
             })
             .catch(err => {
-                Loading.hide();
+                btnElement.disabled = false;
                 Toast.error('오류가 발생했습니다.');
+                console.error(err);
             });
         }
 
@@ -385,10 +400,6 @@
             });
         }
 
-        function copyShareLink(uuid) {
-            const shareUrl = `${window.location.origin}/share/${uuid}`;
-            copyToClipboard(shareUrl, '공유 링크가');
-        }
 
 
         // 카카오톡 인증 시작
@@ -718,14 +729,39 @@
                 }
             });
 
-            // Find Next Payment Logic
+            // Calendar & Full Data for Dashboard
+            const calendarEl = document.getElementById('calendar');
+            const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim();
+
+            const subscriptions = []; // For Calendar
+            const allSubsData = [];   // For Next Payment Calculation (Full Data)
+
+            <c:set var="calendarData" value="${not empty allSubscriptions ? allSubscriptions : subscriptions}" />
+            <c:if test="${not empty calendarData}">
+                <c:forEach items="${calendarData}" var="sub">
+                    // 1. Calendar Event
+                    subscriptions.push({
+                        title: '${sub.serviceName}',
+                        start: new Date(new Date().getFullYear(), new Date().getMonth(), ${sub.billingDate}).toISOString().split('T')[0],
+                        backgroundColor: getBrandColor('${sub.serviceName}'),
+                        borderColor: getBrandColor('${sub.serviceName}')
+                    });
+
+                    // 2. Full Data for Logic
+                    allSubsData.push({
+                        serviceName: '${sub.serviceName}',
+                        billingDate: ${sub.billingDate}
+                    });
+                </c:forEach>
+            </c:if>
+
+            // Find Next Payment Logic (Based on Full Data)
             let minDiff = 999;
             let nextService = null;
             
-            document.querySelectorAll('.card-header[data-billing-date]').forEach(header => {
-                 const billingDateStr = header.getAttribute('data-billing-date');
-                 const billingDate = parseInt(billingDateStr);
-                 const serviceName = header.querySelector('.fw-bold').innerText.split('\n')[0].trim();
+            allSubsData.forEach(sub => {
+                 const billingDate = sub.billingDate;
+                 const serviceName = sub.serviceName;
                  
                  if (isNaN(billingDate)) return;
 
@@ -773,25 +809,7 @@
                  }
             }
 
-            // Calendar
-            const calendarEl = document.getElementById('calendar');
             if (!calendarEl) return;
-
-            const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim();
-
-            const subscriptions = [];
-            // [수정된 부분] JSP forEach 루프를 사용하여 JavaScript 배열에 push
-            // JSP 태그가 JavaScript 문법을 해치지 않도록 주의
-            <c:if test="${not empty subscriptions}">
-                <c:forEach items="${subscriptions}" var="sub" varStatus="status">
-                subscriptions.push({
-                    title: '${sub.serviceName}',
-                    start: new Date(new Date().getFullYear(), new Date().getMonth(), ${sub.billingDate}).toISOString().split('T')[0],
-                    backgroundColor: getBrandColor('${sub.serviceName}'),
-                    borderColor: getBrandColor('${sub.serviceName}')
-                });
-                </c:forEach>
-            </c:if>
 
             const calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',

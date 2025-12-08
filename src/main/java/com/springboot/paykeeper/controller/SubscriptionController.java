@@ -49,22 +49,46 @@ public class SubscriptionController {
 
         System.out.println("[Controller] GET /list - searchType: " + searchType + ", keyword: " + keyword);
 
-        List<SubscriptionDO> subscriptions;
+        // 1. 항상 전체 목록 조회 (달력 및 통계용)
+        List<SubscriptionDO> allSubscriptions = subscriptionService.getAllSubscriptions();
+        model.addAttribute("allSubscriptions", allSubscriptions);
+
+        // 2. 화면에 보여줄 목록 (검색 여부에 따라 다름)
+        List<SubscriptionDO> viewSubscriptions;
 
         // 검색 조건이 있으면 검색, 없으면 전체 목록
         if (searchType != null && !searchType.isEmpty() &&
             keyword != null && !keyword.isEmpty()) {
-            subscriptions = subscriptionService.searchSubscriptions(searchType, keyword);
+            
+            // [개선] 한글 검색어 매핑 (Korean -> English Mapping)
+            String searchKeyword = keyword;
+            if ("service".equals(searchType)) {
+                if (keyword.contains("넷플릭스")) searchKeyword = "Netflix";
+                else if (keyword.contains("유튜브")) searchKeyword = "Youtube"; // Premium 제거하여 범용성 확대
+                else if (keyword.contains("티빙")) searchKeyword = "Tving";
+                else if (keyword.contains("웨이브")) searchKeyword = "Wavve";
+                else if (keyword.contains("디즈니")) searchKeyword = "Disney+";
+                else if (keyword.contains("쿠팡")) searchKeyword = "Coupang"; // Play 제거하여 범용성 확대
+                else if (keyword.contains("왓챠")) searchKeyword = "Watcha";
+                else if (keyword.contains("멜론")) searchKeyword = "Melon";
+                else if (keyword.contains("스포티파이")) searchKeyword = "Spotify";
+                else if (keyword.contains("애플")) searchKeyword = "Apple";
+                // 필요한 경우 매핑 추가
+            }
+
+            viewSubscriptions = subscriptionService.searchSubscriptions(searchType, searchKeyword);
             model.addAttribute("searchType", searchType);
-            model.addAttribute("keyword", keyword);
+            model.addAttribute("keyword", keyword); // 화면에는 원래 입력한 검색어 유지
         } else {
-            subscriptions = subscriptionService.getAllSubscriptions();
+            viewSubscriptions = allSubscriptions;
         }
 
-        // 대시보드 통계 데이터 추가
+        // 대시보드 통계 데이터 추가 (전체 데이터 기준)
         model.addAttribute("stats", subscriptionService.getDashboardStats());
 
-        model.addAttribute("subscriptions", subscriptions);
+        // 리스트 뷰용 데이터
+        model.addAttribute("subscriptions", viewSubscriptions);
+        
         return "list"; // /views/list.jsp
     }
 

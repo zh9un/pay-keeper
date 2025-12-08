@@ -94,6 +94,14 @@ public interface SubscriptionMapper {
      */
     int updateSubscription(SubscriptionDO subscription);
 
+    /**
+     * UUID 업데이트 (기존 데이터 마이그레이션용)
+     * @param seq 구독 ID
+     * @param uuid 새로운 UUID
+     * @return 수정된 행 수
+     */
+    int updateShareUuid(@Param("seq") Integer seq, @Param("uuid") String uuid);
+
     // ===========================
     // DELETE Operations
     // ===========================

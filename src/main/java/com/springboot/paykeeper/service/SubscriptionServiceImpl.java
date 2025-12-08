@@ -172,6 +172,28 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     // ===========================
 
     /**
+     * UUID 자동 복구 로직 (기존 데이터 마이그레이션)
+     * 리스트를 순회하며 UUID가 없는 경우 생성하여 DB 및 객체에 반영
+     */
+    private void checkAndRecoverUuid(List<SubscriptionDO> list) {
+        if (list == null) return;
+        
+        for (SubscriptionDO sub : list) {
+            // [DEBUG] 강제 업데이트 모드: 조건문 제거하고 무조건 업데이트
+            // if (sub.getShareUuid() == null || sub.getShareUuid().trim().isEmpty()) {
+                String newUuid = java.util.UUID.randomUUID().toString();
+                try {
+                    subscriptionMapper.updateShareUuid(sub.getSeq(), newUuid);
+                    sub.setShareUuid(newUuid); // 리스트에도 즉시 반영
+                    System.out.println("[Service] FORCED UUID update for subscription " + sub.getSeq() + ": " + newUuid);
+                } catch (Exception e) {
+                    System.err.println("[Service] Failed to recover UUID for subscription " + sub.getSeq() + ": " + e.getMessage());
+                }
+            // }
+        }
+    }
+
+    /**
      * 1/N 정산 계산 (핵심 비즈니스 로직)
      * @param totalPrice 총 금액
      * @param memberCount 총 인원 수 (본인 포함)

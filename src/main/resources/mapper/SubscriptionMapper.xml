@@ -83,13 +83,13 @@
         FROM subscription s
         <where>
             <if test="searchType == 'service' and keyword != null and keyword != ''">
-                s.service_name LIKE CONCAT('%', #{keyword}, '%')
+                UPPER(s.service_name) LIKE CONCAT('%', UPPER(#{keyword}), '%')
             </if>
             <if test="searchType == 'member' and keyword != null and keyword != ''">
                 s.seq IN (
                     SELECT DISTINCT pm.sub_seq
                     FROM party_member pm
-                    WHERE pm.member_name LIKE CONCAT('%', #{keyword}, '%')
+                    WHERE UPPER(pm.member_name) LIKE CONCAT('%', UPPER(#{keyword}), '%')
                 )
             </if>
         </where>
@@ -128,6 +128,13 @@
             total_price = #{totalPrice},
             billing_date = #{billingDate},
             account_number = #{accountNumber}
+        WHERE seq = #{seq}
+    </update>
+
+    <!-- UUID 업데이트 (기존 데이터 마이그레이션용) -->
+    <update id="updateShareUuid">
+        UPDATE subscription
+        SET share_uuid = #{uuid}
         WHERE seq = #{seq}
     </update>
 
