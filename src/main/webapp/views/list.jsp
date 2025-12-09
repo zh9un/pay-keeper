@@ -744,7 +744,7 @@
                     // 1. Calendar Event
                     subscriptions.push({
                         title: '${sub.serviceName}',
-                        start: new Date(new Date().getFullYear(), new Date().getMonth(), ${sub.billingDate}).toISOString().split('T')[0],
+                        start: `\${new Date().getFullYear()}-\${String(new Date().getMonth() + 1).padStart(2, '0')}-\${String(${sub.billingDate}).padStart(2, '0')}`,
                         backgroundColor: getBrandColor('${sub.serviceName}'),
                         borderColor: getBrandColor('${sub.serviceName}')
                     });
