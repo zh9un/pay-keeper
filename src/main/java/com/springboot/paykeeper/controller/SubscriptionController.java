@@ -299,37 +299,6 @@ public class SubscriptionController {
     }
 
     // ===========================
-    // Guest Share Link (게스트 공유 링크)
-    // ===========================
-
-    /**
-     * UUID 기반 게스트 공유 링크 (읽기 전용)
-     * GET /share/{uuid}
-     * 로그인 없이 구독 정보 조회 가능
-     */
-    @GetMapping("/share/{uuid}")
-    public String guestViewByUuid(@PathVariable("uuid") String uuid, Model model) {
-
-        System.out.println("[Controller] GET /share/" + uuid + " - 게스트 공유 링크 접근");
-
-        try {
-            SubscriptionDO subscription = subscriptionService.getSubscriptionByUuid(uuid);
-
-            if (subscription == null) {
-                model.addAttribute("error", "유효하지 않은 공유 링크입니다.");
-                return "error"; // /views/error.jsp (또는 적절한 에러 페이지)
-            }
-
-            model.addAttribute("subscription", subscription);
-            return "guest_view"; // /views/guest_view.jsp (읽기 전용 뷰)
-
-        } catch (Exception e) {
-            System.err.println("공유 링크 조회 중 오류: " + e.getMessage());
-            model.addAttribute("error", "공유 링크 조회 중 오류가 발생했습니다.");
-            return "error";
-        }
-    }
-    // ===========================
     // KakaoTalk API Integration
     // ===========================
 

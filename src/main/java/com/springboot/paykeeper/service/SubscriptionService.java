@@ -33,13 +33,6 @@ public interface SubscriptionService {
     SubscriptionDO getSubscriptionById(Integer seq);
 
     /**
-     * UUID로 구독 조회 (게스트 공유 링크용)
-     * @param uuid 공유 링크 UUID
-     * @return 구독 정보 (파티원 포함)
-     */
-    SubscriptionDO getSubscriptionByUuid(String uuid);
-
-    /**
      * 동적 검색 (서비스명 or 파티원 이름)
      * @param searchType 검색 타입 ("service" or "member")
      * @param keyword 검색 키워드

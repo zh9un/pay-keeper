@@ -138,6 +138,6 @@ public class KakaoApiService {
         // JSON 문자열 생성 (이스케이프 처리 주의)
         String safeText = text.replace("\n", "\\n").replace("\"", "\\\"");
         return String.format(
-            "{\"object_type\": \"text\",\"text\": \"%s\",\"link\": {\"web_url\": \"http://localhost:8080/list\",\"mobile_web_url\": \"http://localhost:8080/list\"},\"button_title\": \"앱에서 확인\"}", safeText);
+            "{\"object_type\": \"text\",\"text\": \"%s\",\"link\": {\"web_url\": \"http://localhost:8080/list\",\"mobile_web_url\": \"http://localhost:8080/list\"},\"button_title\": \"웹에서 확인\"}", safeText);
     }
 }

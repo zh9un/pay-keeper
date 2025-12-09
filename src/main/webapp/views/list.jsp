@@ -424,10 +424,12 @@
         // [수정 완료] HTML의 onclick과 인자 수가 일치하도록 함수 시그니처 수정
         function pokeUnpaidMember(memberName, serviceName, perPrice, accountNumber) {
             const month = new Date().getMonth() + 1;
-            
-            let message = '[페이키퍼] ' + memberName + '님, [' + serviceName + '] ' + month + '월 구독료 ' + parseInt(perPrice).toLocaleString() + '원 입금 부탁드려요!';
+
+            let message = '[페이키퍼] ' + memberName + '님\n';
+            message += '[' + serviceName + '] ' + month + '월 구독료\n';
+            message += parseInt(perPrice).toLocaleString() + '원 입금 부탁드려요!';
             if (accountNumber && accountNumber.trim() !== '') {
-                message += '\n계좌: ' + accountNumber;
+                message += '\n\n계좌: ' + accountNumber;
             }
 
             // 1. 인증 상태 확인 (클라이언트 측)
